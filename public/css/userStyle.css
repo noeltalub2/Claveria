@@ -1,0 +1,133 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+body {
+	font-family: "Poppins";
+}
+
+nav.heading {
+	background: #fff /*linear-gradient(#0c4b05, #5d8216)*/;
+}
+
+.navbar-toggler {
+	border: none;
+}
+
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler-icon:focus {
+	outline: none;
+	box-shadow: none;
+}
+
+#offcanvas-header {
+	background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.75)),
+		url("../images/banner.jpg");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+footer {
+	background: #0c4b05 /*linear-gradient(#0c4b05, #5d8216)*/;
+}
+
+.footer-text {
+	font-size: 0.75rem;
+}
+
+/* Sign In and Sign Up Css */
+#user-page {
+	margin-top: 100px;
+}
+
+#login-title {
+	font-size: 1rem;
+	line-height: 1.2;
+}
+
+.text-sm {
+	font-size: 0.9rem;
+}
+
+button.button-form {
+	color: #fff;
+	background: #0c4b05;
+}
+
+button.button-form:hover {
+	color: #fff;
+	background: #126d08;
+}
+
+a.button-form {
+	color: #fff;
+	background: #0c4b05;
+}
+
+a.button-form:hover {
+	color: #fff;
+	background: #126d08;
+}
+
+.was-validated .form-check-input:valid ~ .form-check-label {
+	color: #212529;
+}
+
+.was-validated .form-control:valid {
+	background-image: none !important;
+	border-color: #ced4da !important;
+	box-shadow: none !important;
+}
+
+.was-validated .form-select:valid:not([multiple]):not([size]) {
+	background-image: none;
+	border-color: #ced4da;
+}
+
+.was-validated .form-check-input:valid {
+	border-color: rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 768px) {
+	.text-sm-dark {
+		color: #000000 !important;
+	}
+}
+@media (max-width: 425px) {
+	#mmsu_logo {
+		height: 50px;
+	}
+
+	#login-title {
+		font-size: 14px;
+	}
+}
+/* RFID Gatepass Login */
+.nav-links {
+	display: block;
+	font-size: 0.95rem;
+	font-weight: var(--bs-nav-link-font-weight);
+	color: var(--bs-nav-link-color);
+	text-decoration: none;
+	background: 0 0;
+	border: 0;
+	padding-top: 0.25rem !important;
+	padding-bottom: 0.25rem !important;
+	padding-right: 1rem !important;
+	padding-left: 1rem !important;
+}
+.nav-links:hover {
+	color: #fff;
+	background-color: #0c4b05;
+}
+
+.nav-active {
+	color: #fff;
+	background-color: #106406;
+}
+.custom-callout {
+	padding: 1rem;
+	margin-bottom: 1rem;
+	border: 1px solid transparent;
+	border-radius: 0.25rem;
+	/* Add more styles as needed */
+}

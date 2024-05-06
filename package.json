@@ -1,0 +1,31 @@
+{
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.6",
+    "cookie-session": "^2.1.0",
+    "ejs": "^3.1.9",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "moment": "^2.30.1",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.9.5",
+    "nanoid": "^5.0.7",
+    "sharp": "^0.33.3"
+  },
+  "name": "claveria_bus_transport",
+  "description": "Claveria Bus Transport INC. - Operated by Claveria Tours",
+  "version": "1.0.0",
+  "main": "app.js",
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "scripts": {
+    "start": "node --env-file=.env app.js",
+    "dev": "nodemon --env-file=.env app.js"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
