@@ -8,9 +8,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import indexRoutes from "./routes/indexRoutes.js";
-import rfidRoutes from "./routes/rfidRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
+
 import db from "./database/connect_db.js";
 
 const app = express();
@@ -61,7 +59,6 @@ db.getConnection((err, connection) => {
 });
 
 // Use routes
-app.use("/", userRoutes);
 app.use("/", indexRoutes);
 
 // Start the server
