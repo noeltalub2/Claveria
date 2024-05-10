@@ -32,6 +32,11 @@
 
     <title>Claveria Bus Booking</title>
     <style>
+        #seat_status {
+            scroll-margin-top: 60px;
+            /* Adjust the value as needed */
+        }
+
         .submit-btn {
             width: 150px;
             padding: 10px;
@@ -67,7 +72,21 @@
             color: #3f9fbd;
         }
 
+        .book-btn-1 {
+            width: 100px;
+            padding: 6px;
+            background-color: #388da8;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            border-radius: .75rem;
+        }
 
+        .book-btn-1:hover {
+            color: white;
+            background-color: #3f9fbd;
+        }
 
 
         /* Existing styles */
@@ -136,12 +155,24 @@
                     <li><a href="/#" class="">Home</a></li>
                     <li><a href="/#about">About</a></li>
                     <li><a href="/#contact">Contact Us</a></li>
-                    <li><a href="/account">My Account</a></li>
+
+                    <%if (user.role==='guess' ) {%>
                 </ul>
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
             </nav>
 
-            <a class="btn-getstarted" href="/logout">Logout</a>
+            <a class="btn-getstarted" href="/login">Login</a>
+            <%} else {%>
+
+
+                <li><a href="/account">My Account</a></li>
+                </ul>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+                </nav>
+
+                <a class="btn-getstarted" href="/logout">Logout</a>
+                <%}%>
+
 
         </div>
     </header>
@@ -238,12 +269,31 @@
                                             <div class="booking-details">
                                                 <div class="row">
                                                     <div class="col-lg-9">
-                                                        <p>Seats Available: <span class="highlight fw-bold">
+                                                        <p><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                height="16" fill="currentColor"
+                                                                class="bi bi-person-fill" viewBox="0 0 16 16">
+                                                                <path
+                                                                    d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                                                            </svg> Seats Available: <span class="highlight fw-bold">
                                                                 <%=booking.available_seats%>
                                                             </span>
                                                         </p>
-                                                        <p>Time: <span class="highlight ">5 hours</span></p>
-                                                        <p>Estimated Arrival: <span class="highlight fw-bold">
+                                                        <p><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                height="16" fill="currentColor" class="bi bi-clock"
+                                                                viewBox="0 0 16 16">
+                                                                <path
+                                                                    d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z" />
+                                                                <path
+                                                                    d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0" />
+                                                            </svg> Time: <span class="highlight ">5 hours</span></p>
+                                                        <p><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                height="16" fill="currentColor"
+                                                                class="bi bi-calendar-check" viewBox="0 0 16 16">
+                                                                <path
+                                                                    d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0" />
+                                                                <path
+                                                                    d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
+                                                            </svg> Estimated Arrival: <span class="highlight fw-bold">
                                                                 <%= new Intl.DateTimeFormat('en-US', {month: 'short' ,
                                                                     day: '2-digit' , year: 'numeric'
                                                                     }).format(booking.departure_date) %> - <%= new
@@ -254,9 +304,15 @@
                                                     </div>
                                                     <div class="col-lg-3">
                                                         <div class="text-center">
-                                                            <button class="book-btn"
-                                                                onclick="bookingDetails(<%=booking.schedule_id%>)">Book
-                                                                Seats</button>
+                                                            <%if (user.role==='guess' ) {%>
+                                                                <a href="/login" class="book-btn-1" type="button">Book
+                                                                    Seats</a>
+                                                                <%} else {%>
+                                                                    <button class="book-btn"
+                                                                        onclick="bookingDetails(<%=booking.schedule_id%>)">Book
+                                                                        Seats</button>
+                                                                    <%}%>
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -291,8 +347,9 @@
                 <% if (available_schedule.length !==0) {%>
                     <div class="col-lg-5">
                         <div class="d-none" id="seat_container">
-                            <div class="p-4 rounded-4 shadow-sm ">
-                                <h4 class="fw-bold text-center">Choose Seat</h4>
+                            <div class="p-4 rounded-4 shadow-sm text-center">
+                                <h4 class="fw-bold">Choose Seat</h4>
+                                <p id="seat_status" class="small text-danger"></p>
                                 <table class="table table-sm table-borderless">
                                     <tbody>
                                         <tr>
@@ -651,14 +708,31 @@
                                     <p></p>
                                 </div>
                             </div>
+                            <form id="bookingForm">
+                                <input type="hidden" value="" id="sch_inp">
+                                <input type="hidden" value="" id="fare_inp">
+                                <div class="term">
+                                    <div class="p-4 rounded-4 shadow-sm">
 
-                            <input type="hidden" value="" id="sch_inp">
-                            <input type="hidden" value="" id="fare_inp">
-                            <div class="confirm">
-                                <div class="p-4 rounded-4 shadow-sm">
-                                    <button id="submitBtn" class="book-btn">Book Seats</button>
+                                        <input type="checkbox" class="form-check-input" id="exampleCheck1" required>
+                                        <label class="form-check-label small" for="exampleCheck1"> I agree to Terms and
+                                            Conditions
+                                            & Privacy Policy</label>
+
+                                    </div>
                                 </div>
-                            </div>
+                                <div class="confirm">
+                                    <div class="p-4 rounded-4 shadow-sm">
+                                        <%if (user.role==='guess' ) {%>
+                                            <a href="/login" class="btn book-btn-1" type="button">Book
+                                                Seats</a>
+                                            <%} else {%>
+                                                <button id="submitBtn" class="book-btn">Book Seats</button>
+                                                <%}%>
+
+                                    </div>
+                                </div>
+                            </form>
                         </div>
 
 
@@ -687,6 +761,8 @@
                 document.addEventListener("DOMContentLoaded", function () {
                     const maxSeats = <%=passengerCount%>;  // Maximum seats a user can select, adjust as needed
                     const seats = document.querySelectorAll('.seat.available');
+                    const seatStatus = document.getElementById('seat_status');
+                    const form = document.getElementById('bookingForm');
 
                     seats.forEach(function (seat) {
                         seat.addEventListener('click', function () {
@@ -705,22 +781,29 @@
                         });
                     });
 
-                    document.getElementById('submitBtn').addEventListener('click', function () {
+
+                    form.addEventListener('submit', function (event) {
+                        event.preventDefault(); // Prevent the default form submission
+
                         const selectedSeats = document.querySelectorAll('.seat.selected');
                         const selectedSeatIds = Array.from(selectedSeats).map(seat => seat.getAttribute('data-id').trim());
-                        // Add alert if the maxSeats is not equal to what selected
+
+
+                        // Add alert if the maxSeats is not equal to what is selected
                         if (selectedSeats.length != maxSeats) {
-                            alert(`You have selected ${selectedSeats.length} seats, but the maximum allowed is ${maxSeats}. Please select the correct number of seats.`);
+                            seatStatus.innerText = `You have selected ${selectedSeats.length} seats, but the maximum allowed is ${maxSeats}. Please select the correct number of seats.`;
+                            seatStatus.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         } else {
-
-
                             // Define the API endpoint
                             const apiUrl = '/postBookingDetails';
-                            const sch_inp = document.querySelector("#sch_inp").value
-                            const fare_inp = document.querySelector("#fare_inp").value
+                            const sch_inp = document.querySelector("#sch_inp").value;
+                            const fare_inp = document.querySelector("#fare_inp").value;
+
                             // Create the data object containing the schedule ID
                             const data = {
-                                sch_inp, fare_inp, selectedSeatIds
+                                sch_inp,
+                                fare_inp,
+                                selectedSeatIds
                             };
 
                             // Use fetch API to make a POST request
@@ -740,18 +823,13 @@
                                         showConfirmButton: false,
                                         timer: 2000
                                     }).then(() => {
-                                        window.location.reload()
+                                        window.location.reload();
                                     });
-
-
                                 })
                                 .catch((error) => {
                                     console.error('Error:', error);
                                 });
                         }
-
-
-
                     });
                 });
 

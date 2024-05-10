@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../icons/favicon-16x16.png">
+    <link rel="manifest" href="../icons/site.webmanifest">
+    <link rel="mask-icon" href="../icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+
+
+    <!-- Vendor CSS Files -->
+    <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="../assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="../assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="../assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link href="../assets/css/main.css" rel="stylesheet">
+
+    <title>Claveria Bus Booking</title>
+    <style>
+        #seat_status {
+            scroll-margin-top: 60px;
+            /* Adjust the value as needed */
+        }
+
+        .submit-btn {
+            width: 150px;
+            padding: 10px;
+            background-color: #388da8;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            border-radius: .75rem;
+        }
+
+        .submit-btn:hover {
+            background-color: #3f9fbd;
+        }
+
+
+        .book-btn {
+            width: 100%;
+            padding: 6px;
+            background-color: #388da8;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            border-radius: .75rem;
+        }
+
+        .book-btn:hover {
+            color: white;
+            background-color: #3f9fbd;
+        }
+
+        .highlight {
+            color: #3f9fbd;
+        }
+
+        .book-btn-1 {
+            width: 100px;
+            padding: 6px;
+            background-color: #388da8;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            border-radius: .75rem;
+        }
+
+        .book-btn-1:hover {
+            color: white;
+            background-color: #3f9fbd;
+        }
+
+
+        /* Existing styles */
+        .seat {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .seat img {
+            width: 100%;
+            height: auto;
+            vertical-align: middle;
+        }
+
+        .seat span {
+            position: absolute;
+            width: 100%;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: black;
+            pointer-events: none;
+        }
+
+
+
+        .seat.unavailable,
+        .seat.booked {
+            background-color: #e74c3c;
+            /* Red background for unavailable and booked seats */
+            cursor: not-allowed;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body class="index-page">
+
+    <header id="header" class="header d-flex align-items-center ">
+        <div class="container-fluid container-xl position-relative d-flex align-items-center">
+
+            <a href="/" class="logo d-flex align-items-center me-auto">
+                <img src="/images/logo.png" alt="">
+                <h1 class="sitename">Claveria Tours</h1>
+            </a>
+
+            <nav id="navmenu" class="navmenu">
+                <ul>
+                    <li><a href="/#" class="">Home</a></li>
+                    <li><a href="/#about">About</a></li>
+                    <li><a href="/#contact">Contact Us</a></li>
+
+                    <%if (user.role==='guess' ) {%>
+                </ul>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+            </nav>
+
+            <a class="btn-getstarted" href="/login">Login</a>
+            <%} else {%>
+
+
+                <li><a href="/account">My Account</a></li>
+                </ul>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+                </nav>
+
+                <a class="btn-getstarted" href="/logout">Logout</a>
+                <%}%>
+
+
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container-lg">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="" id="seat_container">
+                        <div class="p-4 rounded-4 shadow-sm text-center">
+                            <h4 class="fw-bold ">Selected Seats</h4>
+                            <p id="seat_status" class="small text-danger"></p>
+                            <table class="table table-sm table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div data-id="1 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>1</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="2 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>2</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="">
+                                                <img alt="" src="/svg/blank.svg">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="3 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>3</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="4 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>4</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div data-id="5 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>5</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="6 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>6</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="">
+                                                <img alt="" src="/svg/blank.svg">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="7 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>7</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="8 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>8</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div data-id="9 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>9</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="10 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>10</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="">
+                                                <img alt="" src="/svg/blank.svg">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="11 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>11</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="12 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>12</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div data-id="13" data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>13</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="14" data-type=" 1"="" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>14</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="">
+                                                <img alt="" src="/svg/blank.svg">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="15" data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>15</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="16" data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>16</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div data-id="17 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>17</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="18 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>18</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="">
+                                                <img alt="" src="/svg/blank.svg">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="19 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>19</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="20 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>20</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div data-id="21 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>21</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="22 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>22</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="">
+                                                <img alt="" src="/svg/blank.svg">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="23 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>23</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="24 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>24</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div data-id="25 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>25</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="26 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>26</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="">
+                                                <img alt="" src="/svg/blank.svg">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="27 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>27</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="28 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>28</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div data-id="29 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>29</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="30 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>30</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="">
+                                                <img alt="" src="/svg/blank.svg">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="31 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>31</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="32 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>32</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div data-id="33 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>33</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="34 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>34</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="">
+                                                <img alt="" src="/svg/blank.svg">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="35 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>35</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="36 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>36</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div data-id="37 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>37</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="38 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>38</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="">
+                                                <img alt="" src="/svg/blank.svg">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="39 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>39</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div data-id="40 " data-type="1" class="seat available">
+                                                <img alt="" src="/svg/chair.svg">
+                                                <span>40</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="p-4 rounded-4 shadow-sm">
+                        <div class="summary-title text-center">
+                            <h4>Booking Summary</h4>
+                        </div>
+                        <div class="status_pay">
+                            <div class="p-4 rounded-4 shadow-sm">
+                                <p class="mb-0">Payment Status: <span class="fw-bold float-end">
+                                        <%=booking_details.status%>
+                                    </span></p>
+                                <p class="fst-italic mb-0 mt-2" style="font-size: 12px;"><span
+                                        class="fw-bold">Note:</span> Please pay to the cashier to download your ticket.
+                                    Thank you</p>
+                            </div>
+
+
+                        </div>
+                        <div class="location">
+                            <div class="p-4 rounded-4 shadow-sm">
+                                <p>Destination: <span class="highlight float-end">
+                                        <%=booking_details.start_point%> - <%=booking_details.end_point%>
+                                    </span> </p>
+                                <p>Departure: <span class="highlight float-end" id="departure_time">
+                                        <%= new Intl.DateTimeFormat('en-US', {month: 'short' , day: '2-digit' ,
+                                            year: 'numeric' }).format(new Date(booking_details.departure_date)) %> - <%=
+                                                booking_details.departure_time %>
+                                    </span></p>
+                            </div>
+                        </div>
+                        <div class="fare">
+                            <div class="p-4 rounded-4 shadow-sm">
+                                <p class="mb-0">Fare: <span class="highlight float-end">
+                                        ₱ <%=booking_details.fare%>
+                                    </span> </p>
+                                <p></p>
+                            </div>
+                        </div>
+                        <div class="Subtotal">
+                            <div class="p-4 rounded-4 shadow-sm">
+                                <p>Departure (<%=booking_details.count%> pax)</p>
+                                <p class="mb-0">Subtotal (<%=booking_details.count%> pax)<span
+                                            class="highlight float-end" id="sub_total">
+                                            ₱ <%=booking_details.fare_paid%>
+                                        </span> </p>
+                                <p></p>
+                            </div>
+                        </div>
+                        <div class="total">
+                            <div class="p-4 rounded-4 shadow-sm">
+
+                                <p class="mb-0">Total: <span class="highlight float-end fs-5">
+                                        ₱ <%=booking_details.fare_paid%>
+                                    </span> </p>
+                                <p></p>
+                            </div>
+                        </div>
+
+                        <%if (booking_details.status==='Paid' ) {%>
+                            <div class="ticket">
+                                <div class="p-4 rounded-4 shadow-sm">
+                                    <a href="/download-ticket/<%=booking_details.booking_id%>" type="download" class="btn book-btn">Download Ticket</a>
+                                </div>
+                            </div>
+                            <%}%>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Scroll Top -->
+        <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+                class="bi bi-arrow-up-short"></i></a>
+
+        <!-- Preloader -->
+        <div id="preloader"></div>
+
+        <!-- Vendor JS Files -->
+        <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="../assets/vendor/aos/aos.js"></script>
+        <script src="../assets/vendor/glightbox/js/glightbox.min.js"></script>
+        <script src="../assets/vendor/swiper/swiper-bundle.min.js"></script>
+        <script src="../vendor/sweetalert/sweetalert.js"></script>
+        <!-- Main JS File -->
+        <script src="../assets/js/main.js"></script>
+        <script>
+
+
+            const numbersString = '<%=booking_details.seat_numbers%>';
+            const numbersArray = numbersString.split(', ').map(Number);
+
+
+            const seats = document.querySelectorAll('.seat');
+            seats.forEach(seat => {
+                const seatId = seat.dataset.id.trim(); // Ensure to trim any extra spaces
+                if (numbersArray.includes(parseInt(seatId))) {
+                    seat.classList.remove('available');
+                    seat.classList.add('unavailable', 'booked');
+                    seat.setAttribute('disabled', 'disabled'); // Disable the seat
+                }
+            });
+        </script>
+    </main>
+</body>
+
+</html>

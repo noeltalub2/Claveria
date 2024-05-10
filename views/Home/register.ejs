@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="manifest" href="/icons/site.webmanifest">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+
+
+    <!-- Vendor CSS Files -->
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link href="assets/css/main.css" rel="stylesheet">
+
+    <title>Register | Claveria Bus</title>
+    <style>
+        .submit-btn {
+            width: 100%;
+            padding: 7px;
+            background-color: #388da8;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            border-radius: .75rem;
+        }
+
+        .submit-btn:hover {
+            background-color: #3f9fbd;
+        }
+
+        .fc-custom {
+            font-size: 14px;
+            padding: 10px 15px;
+
+            border-radius: 1;
+
+            color: #00203a;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-color: rgba(61, 67, 72, 0.2);
+            box-shadow: none;
+        }
+    </style>
+</head>
+
+<body class="index-page">
+
+    <header id="header" class="header d-flex align-items-center fixed-top">
+        <div class="container-fluid container-xl position-relative d-flex align-items-center">
+
+            <a href="/" class="logo d-flex align-items-center me-auto">
+                <img src="/images/logo.png" alt="">
+                <h1 class="sitename">Claveria Tours</h1>
+            </a>
+
+            <nav id="navmenu" class="navmenu">
+                <ul>
+                    <li><a href="/" class="">Home</a></li>
+                    <li><a href="/#about">About</a></li>
+                    <li><a href="/#contact">Contact Us</a></li>
+
+                </ul>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+
+        <!-- Hero Section -->
+        <section id="hero" class="hero section">
+            <div class="hero-bg">
+                <img src="/images/hero.png" alt="">
+            </div>
+            <div class="container text-center">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-6">
+                        <form action="/register" method="post">
+                            <div class="p-4 shadow-sm rounded-4 bg-light">
+                                <h2 class="fs-1 text-center fw-bold mb-4">Register</h2>
+                                <%-include ("../Home/alert.ejs")%>
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class=" mb-3">
+                                                <input class="form-control fc-custom" name="fullname" type="text"
+                                                    placeholder="Full name" aria-label="fullname Input" required
+                                                    id="fullname">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <input class="form-control fc-custom" name="email" type="email"
+                                                    placeholder="Email" aria-label="email Input" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class=" mb-3">
+                                                <input class="form-control fc-custom" name="contact" type="text"
+                                                    placeholder="Contact" aria-label="contact Input" required
+                                                    id="contact">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="mb-3">
+                                                <input class="form-control fc-custom" name="address" type="text"
+                                                    placeholder="Address" aria-label="address Input" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <div class="mb-3">
+                                                <input class="form-control fc-custom" name="username" type="text"
+                                                    placeholder="Username" aria-label="username Input" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <div class="mb-3">
+                                                <input class="form-control fc-custom" name="password" type="password"
+                                                    placeholder="Password" aria-label="password Input" required
+                                                    pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}">
+                                                <div class="text-start mt-1" style="font-size: 0.75rem;">
+                                                    Must contain at least one number and one uppercase and lowercase
+                                                    letter,
+                                                    and at
+                                                    least 8 or more characters
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <button type="submit" class="submit-btn">SIGNUP</button>
+                                    <div class="mt-3 text-center">
+                                        <p>Already have an account? <a href="/login">Sign In</a></p>
+                                    </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+        </section><!-- /Hero Section -->
+
+
+
+        <!-- Preloader -->
+        <div id="preloader"></div>
+
+        <!-- Vendor JS Files -->
+        <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="/assets/vendor/aos/aos.js"></script>
+        <script src="/assets/vendor/glightbox/js/glightbox.min.js"></script>
+        <script src="/assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+        <!-- Main JS File -->
+        <script src="/assets/js/main.js"></script>
+        <%-include ("../Home/message.ejs")%>
+    </main>
+</body>
+
+</html>
