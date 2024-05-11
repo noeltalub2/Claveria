@@ -142,35 +142,35 @@
 
     <header id="header" class="header d-flex align-items-center ">
         <div class="container-fluid container-xl position-relative d-flex align-items-center">
-            <a href="/conductor" class="logo d-flex align-items-center me-auto">
+            <a href="/inspector" class="logo d-flex align-items-center me-auto">
                 <img src="/images/logo.png" alt="">
                 <h1 class="sitename">Claveria Tours</h1>
             </a>
             <nav id="navmenu" class="navmenu">
                 <ul>
-                    <li><a href="/conductor" class="">Routes</a></li>
+                    <li><a href="/inspector" class="">Routes</a></li>
                 </ul>
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
             </nav>
-            <a class="btn-getstarted" href="/conductor/logout">Logout</a>
+            <a class="btn-getstarted" href="/inspector/logout">Logout</a>
         </div>
     </header>
 
     <main class="main">
         <div class="container-lg">
-            <h3>Welcome, Conductor <%=user.name%>
+            <h3>Welcome, Inspector <%=user.name%>
             </h3>
 
             <div class="row">
-                <div class="col-lg-7">
+                <div class="col-lg-12">
                     <div class="p-4 rounded-4 shadow-sm">
 
                         <% if (available_schedule.length !==0) {%>
 
                             <div class="location-header">
                                 <h3 class="fw-bold">
-                                    <%=available_schedule[0].start_point %> <span style="color: #388da8bf;">TO</span>
-                                        <%=available_schedule[0].end_point%>
+                                    <span style="color: #388da8bf;">Active</span>
+                                    Schedules
                                 </h3>
                                 <p>Travel Date: <span class="fw-bold">
                                         <%= new Intl.DateTimeFormat('en-US', {month: 'short' , day: '2-digit' ,
@@ -182,153 +182,112 @@
                                     </span></p>
                             </div>
                             <hr>
-                            <%available_schedule.forEach((booking, index)=> {%>
-                                <div class="search-result-main">
-                                    <div class="search-result">
-                                        <div class="p-4 rounded-4 shadow-sm">
-                                            <div class="boarding-details mb-3">
-                                                <span class="badge rounded-pill  fs-6 mb-1 me-1"
-                                                    style="background-color: #388da8bf;">Bus Number:
-                                                    <%= booking.bus_number%>
-                                                </span>
-                                                <span class="badge rounded-pill  fs-6"
-                                                    style="background-color: #388da8bf;">Boarding Time:
-                                                    <%= new Intl.DateTimeFormat('en-US', {month: 'short' ,
-                                                        day: '2-digit' , year: 'numeric'
-                                                        }).format(booking.departure_date) %> - <%= new
-                                                            Intl.DateTimeFormat('en-US', {weekday: 'short'
-                                                            }).format(booking.departure_date) %> -
-                                                            <%=booking.departure_time%>
-                                                </span>
-
-                                            </div>
-                                            <div class="booking-details">
-                                                <div class="row">
-
-                                                    <p><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                            fill="currentColor" class="bi bi-person-fill"
-                                                            viewBox="0 0 16 16">
-                                                            <path
-                                                                d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
-                                                        </svg> Added Passenger: <span class="highlight fw-bold">
-                                                            <%=booking.passenger_count%>
+                            <div class="row">
+                                <%available_schedule.forEach((booking, index)=> {%>
+                                    <div class="col-lg-6">
+                                        <div class="search-result-main">
+                                            <div class="search-result">
+                                                <div class="p-4 rounded-4 shadow-sm">
+                                                    <div class="boarding-details mb-3">
+                                                        <span class="badge rounded-pill  fs-6 mb-1"
+                                                            style="background-color: #388da8bf;">ID:
+                                                            <%= booking.schedule_id%>
                                                         </span>
-                                                    </p>
-
-                                                    <p><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                            fill="currentColor" class="bi bi-calendar-check"
-                                                            viewBox="0 0 16 16">
-                                                            <path
-                                                                d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0" />
-                                                            <path
-                                                                d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
-                                                        </svg> Estimated Arrival: <span class="highlight fw-bold">
+                                                        <span class="badge rounded-pill  fs-6 mb-1"
+                                                            style="background-color: #388da8bf;">Conductor:
+                                                            <%= booking.fullname%>
+                                                        </span>
+                                                        <span class="badge rounded-pill  fs-6 mb-1 me-1"
+                                                            style="background-color: #388da8bf;">Bus Number:
+                                                            <%= booking.bus_number%>
+                                                        </span>
+                                                        <span class="badge rounded-pill  fs-6"
+                                                            style="background-color: #388da8bf;">Boarding Time:
                                                             <%= new Intl.DateTimeFormat('en-US', {month: 'short' ,
                                                                 day: '2-digit' , year: 'numeric'
                                                                 }).format(booking.departure_date) %> - <%= new
                                                                     Intl.DateTimeFormat('en-US', {weekday: 'short'
                                                                     }).format(booking.departure_date) %> -
-                                                                    <%=booking.arrival_time%>
-                                                        </span></p>
+                                                                    <%=booking.departure_time%>
+                                                        </span>
+
+                                                    </div>
+                                                    <div class="booking-details">
+                                                        <div class="row">
+                                                            <p class="mb-1">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                    height="16" fill="currentColor" class="bi bi-cash"
+                                                                    viewBox="0 0 16 16">
+                                                                    <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
+                                                                    <path
+                                                                        d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2z" />
+                                                                </svg> Total Fare: <span class="highlight fw-bold">
+                                                                    ₱ <%=booking.total_fare || '0' %>
+                                                                </span>
+                                                            </p>
+                                                            <p class="mb-1"><svg xmlns="http://www.w3.org/2000/svg"
+                                                                    width="16" height="16" fill="currentColor"
+                                                                    class="bi bi-person-fill" viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                                                                </svg> Added Passenger: <span class="highlight fw-bold">
+                                                                    <%=booking.passenger_count%>
+                                                                </span>
+                                                            </p>
+
+                                                            <p class=""><svg xmlns="http://www.w3.org/2000/svg"
+                                                                    width="16" height="16" fill="currentColor"
+                                                                    class="bi bi-calendar-check" viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0" />
+                                                                    <path
+                                                                        d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
+                                                                </svg> Estimated Arrival: <span
+                                                                    class="highlight fw-bold">
+                                                                    <%= new Intl.DateTimeFormat('en-US', {month: 'short'
+                                                                        , day: '2-digit' , year: 'numeric'
+                                                                        }).format(booking.departure_date) %> - <%= new
+                                                                            Intl.DateTimeFormat('en-US',
+                                                                            {weekday: 'short'
+                                                                            }).format(booking.departure_date) %> -
+                                                                            <%=booking.arrival_time%>
+                                                                </span></p>
 
 
-                                                    <!-- Button trigger modal -->
-                                                    <button type="button" class="book-btn" data-bs-toggle="modal"
-                                                        data-bs-target="#exampleModal">
-                                                        Add Passenger
-                                                    </button>
+                                                            <!-- Button trigger modal -->
+                                                            <button type="button" class="book-btn"
+                                                                data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                                                onclick="updateValue('<%=booking.schedule_id%>','<%=booking.passenger_count%>')">
+                                                                Add Report
+                                                            </button>
 
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <%})%>
-                                    <%} else {%>
-                                        <div class="location-header">
-                                            <h3 class="fw-bold">
-                                                No schedule at the moment
-                                            </h3>
-                                            <p>Travel Date: <span class="fw-bold">
-                                                    N/A
-
-                                                </span></p>
-                                        </div>
-                                        <hr>
-                                        <h2>No Available Schedule</h2>
-                                        <%}%>
-
-
-                    </div>
-                </div>
-
-
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-
-                    <div class="p-4 rounded-4 shadow-sm">
-                        <h3 class="fw-bold">Recent History</h3>
-
-
-                        <% if (history.length> 0) { %>
-                            <div class="table-responsive-md">
-
-
-                                <table class="table table-bordered table-hover" id="historyTable">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Date & Time</th>
-                                            <th>Route</th>
-                                            <th>Sub Route</th>
-
-                                            <th>Bus Number</th>
-                                            <th>Passenger Name</th>
-                                            <th>Fare Collected</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% history.forEach(function(item,index) { %>
-                                            <tr>
-                                                <td>
-                                                    <%=index + 1%>
-                                                </td>
-                                                <td>
-                                                    <%= new Date(item.departure_date).toLocaleDateString() %>, <%=
-                                                            item.departure_time %>
-                                                </td>
-
-                                                <td>
-                                                    <%= item.start_point %> - <%= item.end_point %>
-                                                </td>
-                                                <td>
-                                                    <%= item.origin %>
-                                                </td>
-
-                                                <td>
-                                                    <%= item.bus_number %>
-                                                </td>
-                                                <td>
-                                                    <%= item.fullname %>
-                                                </td>
-                                                <td>
-                                                    <%= item.fare_paid ? '₱' + item.fare_paid : 'Not available' %>
-                                                </td>
-                                            </tr>
-                                            <% }); %>
-                                    </tbody>
-                                </table>
+                                    <%})%>
                             </div>
-                            <% } else { %>
-                                <p>No history available.</p>
-                                <% } %>
+                            <%} else {%>
+                                <div class="location-header">
+                                    <h3 class="fw-bold">
+                                        No schedule at the moment
+                                    </h3>
+                                    <p>Travel Date: <span class="fw-bold">
+                                            N/A
 
+                                        </span></p>
+                                </div>
+                                <hr>
+                                <h2>No Available Schedule</h2>
+                                <%}%>
 
 
                     </div>
-
                 </div>
+
+
             </div>
 
             <% if (available_schedule.length !==0) {%>
@@ -338,43 +297,32 @@
                         <div class="modal-content">
                             <form id="addForm" method="post">
                                 <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add Passenger</h1>
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add Report</h1>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <input type="hidden" value="<%=available_schedule[0].schedule_id %>"
-                                        name="schedule_id" id="schedule_id">
-                                    <div class="mb-2">
-                                        <label for="exampleFormControlInput1" class="form-label fw-bold">Passenger
-                                            Name</label>
-                                        <input type="text" class="form-control" id="fullname" required name="fullname">
-                                    </div>
-                                    <div class="mb-2">
-                                        <label for="exampleFormControlInput2" class="form-label fw-bold">Origin</label>
+                                    <input type="hidden" name="schedule_id" id="schedule_id">
 
-                                        <input type="text" class="form-control" id="autocompleteInput" name="origin"
-                                            placeholder="Search..." required>
-                                        <div id="autocompleteList" class="list-group"></div>
 
-                                    </div>
                                     <div class="mb-2">
-                                        <label for="exampleFormControlInput3"
-                                            class="form-label fw-bold">Destination</label>
-                                        <input type="text" readonly class="form-control" id="destination"
-                                            name="destination" disabled value="<%=available_schedule[0].start_point %>"
+                                        <label for="exampleFormControlInput3" class="form-label fw-bold">Arrival
+                                            Time</label>
+                                        <input type="time" class="form-control" id="arrival_time" name="arrival_time"
                                             required>
                                     </div>
                                     <div class="mb-2">
-                                        <label for="exampleFormControlInput4" class="form-label fw-bold">Fare</label>
-                                        <input type="text" readonly class="form-control" id="fare" disabled name="fare"
-                                            placeholder="₱: 0.00">
+                                        <label for="exampleFormControlInput4" class="form-label fw-bold">Added
+                                            Passenger</label>
+                                        <input type="number" class="form-control" id="added_passenger"
+                                            name="added_passenger" placeholder="">
                                     </div>
+                                
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary book-btn-1">Add Passenger</button>
+                                    <button type="submit" class="btn btn-primary book-btn-1">Add Report</button>
                                 </div>
                             </form>
                         </div>
@@ -402,6 +350,18 @@
                     <script src="../vendor/datatables/datatables.bootstrap.js"></script>
                     <script>
 
+                        function updateValue(sch_id, passenger_count) {
+                            const scheduleIdElement = document.getElementById("schedule_id");
+                            const passengerElement = document.getElementById("added_passenger");
+                            if (scheduleIdElement &&  passengerElement) {
+                                // Set the value property for input elements
+                                scheduleIdElement.value = sch_id;
+                                passengerElement.value = passenger_count  // Change from innerHTML to value
+                            } else {
+                                console.error("Element not found!");
+                            }
+                   
+                        }
                         document.addEventListener("DOMContentLoaded", function () {
                             const form = document.getElementById("addForm")
 
@@ -424,7 +384,7 @@
                                     })
                                 } else {
                                     // Define the API endpoint
-                                    const apiUrl = '/conductor/add';
+                                    const apiUrl = '/inspector/add';
 
                                     // Create the data object containing the schedule ID
                                     const data = {
@@ -471,44 +431,7 @@
                                 }
                             });
                         })
-                        const routes = <%- JSON.stringify(sub_routes) %>;
-                        const origins = routes.map(route => route.origin);
-                        const fares = routes.map(route => route.fare);
 
-                        document.getElementById('autocompleteInput').addEventListener('input', function () {
-                            let input = this.value;
-                            let autocompleteList = document.getElementById('autocompleteList');
-                            let fareInput = document.getElementById('fare');
-                            autocompleteList.innerHTML = ''; // Clear previous autocomplete suggestions
-                            fareInput.value = ''; // Clear fare field initially
-
-                            if (!input) {
-                                autocompleteList.style.display = 'none';
-                                return;
-                            }
-
-                            // Filter suggestions based on input
-                            let suggestions = origins.filter(item => item.toLowerCase().startsWith(input.toLowerCase()));
-
-                            if (suggestions.length === 0) {
-                                fareInput.value = ''; // Clear fare if no suggestions match
-                            }
-
-                            suggestions.forEach((filteredName, index) => {
-                                let listItem = document.createElement('div');
-                                listItem.classList.add('list-group-item', 'list-group-item-action');
-                                listItem.textContent = filteredName;
-                                listItem.onclick = function () {
-                                    document.getElementById('autocompleteInput').value = filteredName;
-                                    fareInput.value = fares[origins.indexOf(filteredName)]; // Correctly assign fare based on selected origin
-                                    autocompleteList.innerHTML = '';
-                                    autocompleteList.style.display = 'none';
-                                };
-                                autocompleteList.appendChild(listItem);
-                            });
-
-                            autocompleteList.style.display = 'block';
-                        });
                     </script>
                     <script>
                         new DataTable('#historyTable', {
@@ -518,7 +441,7 @@
                     </script>
                     <!-- Main JS File -->
                     <script src="../assets/js/main.js"></script>
-                    <%-include ("../Conductor/message.ejs")%>
+                    <%-include ("../Inspector/message.ejs")%>
 
     </main>
 </body>

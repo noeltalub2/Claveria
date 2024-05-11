@@ -251,10 +251,14 @@
                                     <div class="search-result">
                                         <div class="p-4 rounded-4 shadow-sm">
                                             <div class="boarding-details mb-3">
-                                                <span class="badge rounded-pill me-1 mb-1  fs-6"
+                                                <span class="badge rounded-pill mb-1  fs-6"
                                                     style="background-color: #388da8bf;">₱
                                                     <%=booking.fare%>
                                                 </span>
+                                                <span class="badge rounded-pill mb-1  fs-6"
+                                                style="background-color: #388da8bf;">Bus Number: 
+                                                <%=booking.bus_number%>
+                                            </span>
                                                 <span class="badge rounded-pill  fs-6"
                                                     style="background-color: #388da8bf;">Boarding Time:
                                                     <%= new Intl.DateTimeFormat('en-US', {month: 'short' ,
@@ -269,7 +273,7 @@
                                             <div class="booking-details">
                                                 <div class="row">
                                                     <div class="col-lg-9">
-                                                        <p><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                        <p class="mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="16"
                                                                 height="16" fill="currentColor"
                                                                 class="bi bi-person-fill" viewBox="0 0 16 16">
                                                                 <path
@@ -278,7 +282,7 @@
                                                                 <%=booking.available_seats%>
                                                             </span>
                                                         </p>
-                                                        <p><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                        <p class="mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="16"
                                                                 height="16" fill="currentColor" class="bi bi-clock"
                                                                 viewBox="0 0 16 16">
                                                                 <path
