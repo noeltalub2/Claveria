@@ -16,7 +16,7 @@ router.post(
 	"/add",
 	auth.requireAuth,
 	auth.checkRole(["inspector"]),
-	inspectorController.postAddPassenger
+	inspectorController.postAddReport
 );
 
 router.get(

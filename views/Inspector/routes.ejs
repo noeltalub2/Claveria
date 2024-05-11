@@ -309,15 +309,15 @@
                                         <label for="exampleFormControlInput3" class="form-label fw-bold">Arrival
                                             Time</label>
                                         <input type="time" class="form-control" id="arrival_time" name="arrival_time"
-                                            required>
+                                            required step="1">
                                     </div>
                                     <div class="mb-2">
                                         <label for="exampleFormControlInput4" class="form-label fw-bold">Added
                                             Passenger</label>
                                         <input type="number" class="form-control" id="added_passenger"
-                                            name="added_passenger" placeholder="">
+                                            name="added_passenger" placeholder="" required>
                                     </div>
-                                
+
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
@@ -349,18 +349,19 @@
                     <script src="../vendor/datatables/datatables.js"></script>
                     <script src="../vendor/datatables/datatables.bootstrap.js"></script>
                     <script>
-
+                        const scheduleIdElement = document.getElementById("schedule_id");
+                        const passengerElement = document.getElementById("added_passenger");
+                        const arrivalElement = document.getElementById("arrival_time");
                         function updateValue(sch_id, passenger_count) {
-                            const scheduleIdElement = document.getElementById("schedule_id");
-                            const passengerElement = document.getElementById("added_passenger");
-                            if (scheduleIdElement &&  passengerElement) {
+
+                            if (scheduleIdElement && passengerElement) {
                                 // Set the value property for input elements
                                 scheduleIdElement.value = sch_id;
                                 passengerElement.value = passenger_count  // Change from innerHTML to value
                             } else {
                                 console.error("Element not found!");
                             }
-                   
+
                         }
                         document.addEventListener("DOMContentLoaded", function () {
                             const form = document.getElementById("addForm")
@@ -368,67 +369,54 @@
                             form.addEventListener('submit', function (event) {
                                 event.preventDefault(); // Prevent the default form submission
 
-                                const schedule_id = document.getElementById("schedule_id").value
-                                const fullname = document.getElementById("fullname").value
-                                const origin = document.getElementById("autocompleteInput").value
-                                const destination = document.getElementById("destination").value
-                                const fare = document.getElementById("fare").value
+                                const schedule_id = scheduleIdElement.value
+                                const added_passenger = passengerElement.value
 
-                                if (!fare) {
-                                    Swal.fire({
-                                        position: "top-end",
-                                        icon: "error",
-                                        title: `Please select valid Origin`,
-                                        showConfirmButton: false,
-                                        timer: 2000
+                                const arrival_time = arrivalElement.value
+                                // Define the API endpoint
+                                const apiUrl = '/inspector/add';
+
+                                // Create the data object containing the schedule ID
+                                const data = {
+                                    schedule_id,
+                                    added_passenger,
+                                    arrival_time
+                                };
+
+                                // Use fetch API to make a POST request
+                                fetch(apiUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify(data),
+                                })
+                                    .then(res => res.json())
+                                    .then(response => {
+
+                                        if (response.success) {
+                                            Swal.fire(
+                                                'Success!',
+                                                `${response.message}`,
+                                                'success',
+
+                                            ).then(function () {
+                                                window.location.reload()
+                                            });
+
+
+                                        }
+                                        else {
+                                            Swal.fire(
+                                                'Error',
+                                                `${response.message}`,
+                                                'error'
+                                            ).then(function () {
+                                                window.location.reload()
+                                            });
+                                        }
                                     })
-                                } else {
-                                    // Define the API endpoint
-                                    const apiUrl = '/inspector/add';
 
-                                    // Create the data object containing the schedule ID
-                                    const data = {
-                                        schedule_id,
-                                        fullname,
-                                        origin,
-                                        destination,
-                                        fare,
-                                    };
-
-                                    // Use fetch API to make a POST request
-                                    fetch(apiUrl, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                        },
-                                        body: JSON.stringify(data),
-                                    })
-                                        .then(res => res.json())
-                                        .then(response => {
-
-                                            if (response.success) {
-                                                Swal.fire(
-                                                    'Success!',
-                                                    `${response.message}`,
-                                                    'success',
-
-                                                ).then(function () {
-                                                    window.location.reload()
-                                                });
-
-
-                                            }
-                                            else {
-                                                Swal.fire(
-                                                    'Error',
-                                                    `${response.message}`,
-                                                    'error'
-                                                ).then(function () {
-                                                    window.location.reload()
-                                                });
-                                            }
-                                        })
-                                }
                             });
                         })
 

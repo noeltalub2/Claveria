@@ -31,7 +31,7 @@ const postLogin = async (req, res) => {
 
 					if (match_password) {
 						const generateToken = createToken(
-							result[0].cnd_id,
+							result[0].ins_id,
 							result[0].username,
 							"inspector"
 						);
@@ -62,7 +62,7 @@ const getRoutes = async (req, res) => {
 	const date = new Date(new Date().setDate(new Date().getDate()))
 		.toISOString()
 		.slice(0, 10);
-	
+
 	const available_schedule = await query(
 		"SELECT COUNT(pp.psg_id) AS passenger_count, b.bus_number, sch.schedule_id, sch.route_id, sch.bus_id, sch.departure_time, sch.arrival_time, sch.departure_date,SUM(pp.fare_paid) as total_fare, rt.fare, rt.start_point, rt.end_point, c.fullname FROM schedules sch JOIN routes rt ON sch.route_id = rt.route_id JOIN buses b ON sch.bus_id = b.bus_id JOIN conductors c ON c.cnd_id = sch.conductor_id LEFT JOIN pickup_passenger pp ON pp.schedule_id = sch.schedule_id WHERE sch.departure_date = ? AND sch.status = 'Active' GROUP BY sch.schedule_id, sch.route_id, sch.bus_id, sch.departure_time, sch.arrival_time, sch.departure_date, rt.fare, rt.start_point, rt.end_point, b.bus_number;",
 		[date]
@@ -70,43 +70,36 @@ const getRoutes = async (req, res) => {
 
 	res.render("Inspector/routes", {
 		available_schedule,
-	
 	});
 };
 
-const postAddPassenger = async (req, res) => {
-	const { fullname, origin, destination, fare, schedule_id } = req.body;
-
+const postAddReport = async (req, res) => {
+	const { schedule_id, added_passenger, arrival_time } = req.body;
+	
 	try {
 		const query =
-			"INSERT INTO pickup_passenger (fullname, origin, destination, fare_paid, schedule_id, conductor_id) VALUES (?, ?, ?, ?, ?,?)";
+			"INSERT INTO inspector_report (inspector_id, schedule_id, date,arrival_time, added_passenger) VALUES (?, ?, CURDATE(), ?, ?)";
 
 		db.query(
 			query,
-			[
-				fullname,
-				origin,
-				destination,
-				fare,
-				schedule_id,
-				res.locals.user.id,
-			],
+			[res.locals.user.id, schedule_id, arrival_time, added_passenger],
 			(err, results) => {
 				if (err) {
 					console.log(err);
 					return res.status(500).json({
 						success: false,
-						message: "There was an error adding the passenger.",
+						message: "There was an error adding the report.",
 					});
 				}
 				// Return a JSON response indicating success
 				res.status(200).json({
 					success: true,
-					message: "Passenger added successfully.",
+					message: "Report added successfully.",
 				});
 			}
 		);
 	} catch (e) {
+		console.log(e)
 		return res.status(500).json({
 			success: false,
 			message: "There was an error.",
@@ -122,6 +115,6 @@ export default {
 	getLogin,
 	postLogin,
 	getRoutes,
-	postAddPassenger,
+	postAddReport,
 	getLogout,
 };
