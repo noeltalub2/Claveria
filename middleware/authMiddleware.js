@@ -22,7 +22,15 @@ const queryId = async (id, role) => {
 				);
 			return rows;
 		}
-
+		if (role === "admin") {
+			const [rows] = await db
+				.promise()
+				.query(
+					"SELECT admin_id, username,fullname FROM admin WHERE username = ?",
+					[id]
+				);
+			return rows;
+		}
 		if (role === "inspector") {
 			const [rows] = await db
 				.promise()
@@ -112,7 +120,7 @@ const forwardAuth = async (req, res, next) => {
 						};
 						switch (decodedToken.role) {
 							case "admin":
-								res.redirect("/admin/dashboard");
+								res.redirect("/admin");
 								break;
 							case "user":
 								res.redirect("/");

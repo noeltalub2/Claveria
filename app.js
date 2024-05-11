@@ -10,6 +10,7 @@ import { dirname } from "path";
 import indexRoutes from "./routes/indexRoutes.js";
 import conductorRoutes from "./routes/conductorRoutes.js";
 import inspectorRoutes from "./routes/inspectorRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 import db from "./database/connect_db.js";
 
@@ -61,7 +62,8 @@ db.getConnection((err, connection) => {
 });
 
 // Use routes
-app.use("/inspector", inspectorRoutes)
+app.use("/admin", adminRoutes);
+app.use("/inspector", inspectorRoutes);
 app.use("/conductor", conductorRoutes);
 app.use("/", indexRoutes);
 
