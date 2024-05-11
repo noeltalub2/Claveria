@@ -126,7 +126,7 @@ const getBooking = async (req, res) => {
 	)[0];
 
 	const available_schedule = await query(
-		"SELECT sch.schedule_id, sch.route_id, sch.bus_id, sch.departure_time, sch.arrival_time, sch.departure_date, rt.fare, rt.start_point, rt.end_point, (b.capacity - IFNULL(bc.booked_count, 0)) AS available_seats FROM schedules sch JOIN routes rt ON sch.route_id = rt.route_id JOIN buses b ON sch.bus_id = b.bus_id LEFT JOIN (SELECT schedule_id, COUNT(*) AS booked_count FROM bookings WHERE booking_date = ? AND status != 'Cancelled' GROUP BY schedule_id) bc ON sch.schedule_id = bc.schedule_id WHERE sch.route_id = ? AND sch.departure_date = ? AND sch.status = 'Active';",
+		"SELECT sch.schedule_id, sch.route_id, sch.bus_id, sch.departure_time, sch.arrival_time, sch.departure_date, rt.fare, rt.start_point, rt.end_point, b.bus_number, (b.capacity - IFNULL(bc.booked_count, 0)) AS available_seats FROM schedules sch JOIN routes rt ON sch.route_id = rt.route_id JOIN buses b ON sch.bus_id = b.bus_id LEFT JOIN (SELECT schedule_id, COUNT(*) AS booked_count FROM bookings WHERE booking_date = ? AND status != 'Cancelled' GROUP BY schedule_id) bc ON sch.schedule_id = bc.schedule_id WHERE sch.route_id = ? AND sch.departure_date = ? AND sch.status = 'Active';",
 		[departure, route, departure]
 	);
 

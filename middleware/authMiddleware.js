@@ -22,6 +22,16 @@ const queryId = async (id, role) => {
 				);
 			return rows;
 		}
+
+		if (role === "inspector") {
+			const [rows] = await db
+				.promise()
+				.query(
+					"SELECT ins_id, username,fullname FROM inspectors WHERE username = ?",
+					[id]
+				);
+			return rows;
+		}
 	} catch (err) {
 		throw err;
 	}
@@ -44,7 +54,9 @@ const requireAuth = async (req, res, next) => {
 					);
 					if (
 						user.length === 0 ||
-						!["user", "conductor",].includes(decodedToken.role)
+						!["user", "conductor", "inspector", "admin"].includes(
+							decodedToken.role
+						)
 					) {
 						res.redirect("/unauthorized");
 					} else {
@@ -83,10 +95,12 @@ const forwardAuth = async (req, res, next) => {
 						decodedToken.username,
 						decodedToken.role
 					);
-				
+
 					if (
 						user.length === 0 ||
-						!["user", "admin", "conductor"].includes(decodedToken.role)
+						!["user", "admin", "conductor", "inspector"].includes(
+							decodedToken.role
+						)
 					) {
 						next();
 					} else {
@@ -104,7 +118,10 @@ const forwardAuth = async (req, res, next) => {
 								res.redirect("/");
 								break;
 							case "conductor":
-								res.redirect("/conductor/");
+								res.redirect("/conductor");
+								break;
+							case "inspector":
+								res.redirect("/inspector");
 								break;
 							default:
 								next();
