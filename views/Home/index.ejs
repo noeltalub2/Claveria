@@ -65,7 +65,7 @@
           <li><a href="#about">About</a></li>
           <li><a href="#contact">Contact Us</a></li>
 
-          <%if (user.role==='guess' ) {%>
+       <%if (['guess', 'inspector', 'conductor', 'admin'].includes(user.role)) {%>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>

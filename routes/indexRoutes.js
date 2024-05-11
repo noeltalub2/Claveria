@@ -4,11 +4,11 @@ import auth from "../middleware/authMiddleware.js";
 const router = Router();
 
 router.get("/", auth.requireAuth, indexController.getIndex);
-router.get("/login", auth.requireAuth, indexController.getLogin);
-router.post("/login", auth.requireAuth, indexController.postLogin);
+router.get("/login", auth.forwardAuth, indexController.getLogin);
+router.post("/login", auth.forwardAuth, indexController.postLogin);
 
-router.get("/register", auth.requireAuth, indexController.getRegister);
-router.post("/register", auth.requireAuth, indexController.postRegister);
+router.get("/register", auth.forwardAuth, indexController.getRegister);
+router.post("/register", auth.forwardAuth, indexController.postRegister);
 
 router.get("/booking", auth.requireAuth, indexController.getBooking);
 router.post(
