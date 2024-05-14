@@ -1,0 +1,297 @@
+<%-include ("../Includes/Admin/head.ejs")%>
+
+    <body>
+        <script src="/assets/static/js/initTheme.js"></script>
+        <div id="app">
+            <%-include ("../Includes/Admin/header.ejs")%>
+                <div id="main" class='layout-navbar navbar-fixed'>
+                    <%-include ("../Includes/Admin/header_top.ejs")%>
+                        <div id="main-content">
+
+                            <div class="page-heading">
+                                <div class="page-title">
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 order-md-1 order-last">
+                                            <h3>Bookings</h3>
+                                            <p class="text-subtitle text-muted">View booking details.
+                                            </p>
+                                        </div>
+                                        <div class="col-12 col-md-6 order-md-2 order-first">
+                                            <nav aria-label="breadcrumb"
+                                                class="breadcrumb-header float-start float-lg-end">
+                                                <ol class="breadcrumb">
+                                                    <li class="breadcrumb-item"><a href="/admin/">Dashboard</a></li>
+                                                    <li class="breadcrumb-item"><a href="/admin/booking">Booking</a>
+                                                    </li>
+                                                    <li class="breadcrumb-item"><a
+                                                            href="/admin/booking/route/<%=route_id%>">Route</a></li>
+                                                    <li class="breadcrumb-item"><a
+                                                            href="/admin/booking/route/schedule/<%=schedule_id%>">Schedule</a>
+                                                    </li>
+                                                    <li class="breadcrumb-item active" aria-current="page">View Booking
+                                                    </li>
+                                                </ol>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <section class="section">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <form action="/admin//booking/route/schedule/edit/" method="post">
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+                                                        <div class="mb-3">
+                                                            <label for="busNumber" class="form-label">Bus Number</label>
+                                                            <input type="text" class="form-control" id="busNumber"
+                                                                readonly value="<%=booking_details.bus_number%>"
+                                                                disabled>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="passengerName" class="form-label">Passenger
+                                                                Name</label>
+                                                            <input type="text" class="form-control" id="passengerName"
+                                                                value="<%=booking_details.fullname%>" readonly disabled>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="seatNumber" class="form-label">Seat
+                                                                Number</label>
+                                                            <input type="text" class="form-control" id="seatNumber"
+                                                                readonly disabled
+                                                                value="<%=booking_details.seat_numbers%>">
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="route" class="form-label">Route</label>
+                                                            <input type="text" class="form-control" id="route"
+                                                                value="<%=booking_details.start_point%> - <%=booking_details.end_point%>"
+                                                                readonly disabled>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6">
+                                                        
+                                                        <div class="mb-3">
+                                                            <label for="dropOffPoint" class="form-label">Drop Off
+                                                                Point</label>
+                                                            <input type="text" class="form-control dropdown-toggle"
+                                                                id="autocompleteInput" name="drop_off"
+                                                                placeholder="Search..."
+                                                                value="<%=booking_details.drop_off%>"
+                                                                data-bs-toggle="dropdown" aria-expanded="false"
+                                                                required>
+                                                            <ul id="autocompleteList" class="dropdown-menu"
+                                                                style="max-height: 200px; overflow-y: auto;"
+                                                                aria-labelledby="autocompleteInput"></ul>
+                                                        </div>
+
+
+                                                        <div class="mb-3">
+                                                            <label for="discount" class="form-label">Discount
+                                                                (optional)</label>
+                                                            <select class="form-control" id="discount" name="discount"
+                                                                onchange="applyDiscount()">
+                                                                <option value="">No Discount</option>
+                                                                <%discounts.forEach((discount) => {%>
+                                                                    <option value="<%=discount.discount_id%>" data-id="<%=discount.discount_percentage%>" <%=booking_details.discount_id == discount.discount_id ? 'selected' : ''%>><%=discount.discount_type%> - <%= (discount.discount_percentage) * 100%>%</option>
+                                                                <%})%>
+                                                                
+                                                               
+                                                            
+                                                            </select>
+                                                        </div>
+
+
+                                                        <div class="mb-3">
+                                                            <label for="fare" class="form-label">Fare</label>
+                                                            <input type="number" class="form-control" id="fare"
+                                                                value="<%=booking_details.fare_paid%>" name="fare" step=".01" required>
+
+                                                                <input type="hidden" value="<%=booking_details.fare_paid%>" id="orig_fare">
+                                                                <input type="hidden" value="<%=booking_details.booking_id%>" name="booking_id">
+                                                            </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                                    <%if (booking_details.status === 'Paid') {%>
+                                                        <a href="/admin/download-ticket/<%=booking_details.booking_id%>/<%=booking_details.user_id%>" class="btn btn-success">Download Reciept</a>
+                                                    <%} else if (booking_details.status === 'Pending')  {%>
+                                                        <button type="submit" class="btn btn-primary">Edit Booking</button>
+                                                        <button type="button" class="btn btn-danger" onclick="cancelReservation('<%=booking_details.booking_id%>')">Cancel Booking</button>
+                                                        <button type="button" class="btn btn-success" onclick="paidReservation('<%=booking_details.booking_id%>')">Mark as Paid</button>
+                                                      
+                                                    <%} else { %>
+                                 
+                                                       
+                                                       
+                                                        <%}%>
+                                                </div>
+                                            </form>
+
+                                        </div>
+                                    </div>
+
+                                </section>
+                            </div>
+
+                        </div>
+
+                </div>
+        </div>
+        <%-include ("../Includes/Admin/script.ejs")%>
+            <script>
+                const routes = <%- JSON.stringify(sub_routes) %>;
+                const origins = routes.map(route => route.origin);
+                const fares = routes.map(route => route.fare);
+
+                function applyDiscount() {
+    var originalFare = document.getElementById('orig_fare').value; // Get the original fare from the server
+
+    var discountElement = document.getElementById('discount');
+    var discountPercentage = parseFloat(discountElement.options[discountElement.selectedIndex].getAttribute('data-id')); // Get the selected discount percentage
+
+    // Check if discountPercentage is NaN (which means "No Discount" was selected)
+    if (isNaN(discountPercentage)) {
+        discountPercentage = 0; // Set discountPercentage to 0 if "No Discount" was selected
+    }
+
+    // Calculate the discounted fare
+    var discountedFare = originalFare * (1 - discountPercentage);
+
+    // Update the fare input field
+    document.getElementById('fare').value = discountedFare.toFixed(2); // Format to 2 decimal places
+}
+                document.getElementById('autocompleteInput').addEventListener('input', function () {
+                    let input = this.value;
+                    let autocompleteList = document.getElementById('autocompleteList');
+                    let fareInput = document.getElementById('fare');
+                    let origfareInput = document.getElementById('orig_fare');
+                    autocompleteList.innerHTML = ''; // Clear previous autocomplete suggestions
+                    fareInput.value = ''; // Clear fare field initially
+                    origfareInput.value = '';
+                    if (!input) {
+                        autocompleteList.classList.remove('show');
+                        return;
+                    }
+
+                    // Filter suggestions based on input
+                    let suggestions = origins.filter(item => item.toLowerCase().startsWith(input.toLowerCase()));
+
+                    if (suggestions.length === 0) {
+                        fareInput.value = '';
+                        origfareInput.value = ''; // Clear fare if no suggestions match
+                    }
+
+                    suggestions.forEach((filteredName, index) => {
+                        let listItem = document.createElement('li');
+                        listItem.classList.add('dropdown-item');
+                        listItem.textContent = filteredName;
+                        listItem.onclick = function () {
+                            document.getElementById('autocompleteInput').value = filteredName;
+                            fareInput.value = fares[origins.indexOf(filteredName)] * <%-booking_details.count%>;
+                            origfareInput.value = fares[origins.indexOf(filteredName)] * <%-booking_details.count%>; // Correctly assign fare based on selected origin
+                            autocompleteList.classList.remove('show');
+                            applyDiscount()
+                        };
+                        autocompleteList.appendChild(listItem);
+                    });
+
+                    if (suggestions.length > 0) {
+                        autocompleteList.classList.add('show');
+                    } else {
+                        autocompleteList.classList.remove('show');
+                    }
+                });
+
+            </script>
+            <script>
+                function cancelReservation(id) {
+                        Swal.fire({
+                            title: "Cancel Reservation",
+                            text: `Are you sure you want to cancel this reservation? This action cannot be undone.`,
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonText: "Confirm", // Set the text for the confirmation button
+                            cancelButtonText: "Cancel",  // Set the text for the cancel button
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                fetch("/admin/booking/route/schedule/cancel/", {
+                                    method: "POST",
+                                    body: JSON.stringify({ id }),
+                                    headers: { "Content-Type": "application/json" },
+                                })
+                                    .then((res) => res.json())
+                                    .then((response) => {
+                                        console.log(response)
+                                        if (response.success) {
+                                            Swal.fire(
+                                                'Success!',
+                                                `${response.message}`,
+                                                'success'
+                                            ).then(function () {
+                                                window.location.href = `/admin/booking/route/schedule/${<%=schedule_id%>}`;
+                                            });
+                                        }
+                                        else {
+                                            Swal.fire(
+                                                'Error',
+                                                `${response.message}`,
+                                                'error'
+                                            ).then(function () {
+                                                window.location.href = `/admin/booking/route/schedule/${<%=schedule_id%>}`;
+                                            });
+                                        }
+                                    });
+                            } else if (result.isDismissed) {
+                                // User clicked the "Cancel" button or outside the dialog
+                                // You can add code for what should happen when the cancel button is clicked or the dialog is dismissed
+                            }
+                        });
+                    }
+
+                    function paidReservation(id) {
+                        Swal.fire({
+                            title: "Mark as Paid",
+                            text: `Are you sure you want to mark this booking as paid? This action cannot be undone.`,
+                            icon: "success",
+                            showCancelButton: true,
+                            confirmButtonText: "Confirm", // Set the text for the confirmation button
+                            cancelButtonText: "Cancel",  // Set the text for the cancel button
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                fetch("/admin/booking/route/schedule/paid/", {
+                                    method: "POST",
+                                    body: JSON.stringify({ id }),
+                                    headers: { "Content-Type": "application/json" },
+                                })
+                                    .then((res) => res.json())
+                                    .then((response) => {
+                               
+                                        if (response.success) {
+                                            Swal.fire(
+                                                'Success!',
+                                                `${response.message}`,
+                                                'success'
+                                            ).then(function () {
+                                                window.location.href = `/admin/booking/route/schedule/${<%=schedule_id%>}`;
+                                            });
+                                        }
+                                        else {
+                                            Swal.fire(
+                                                'Error',
+                                                `${response.message}`,
+                                                'error'
+                                            ).then(function () {
+                                                window.location.href = `/admin/booking/route/schedule/${<%=schedule_id%>}`;
+                                            });
+                                        }
+                                    });
+                            } else if (result.isDismissed) {
+                                // User clicked the "Cancel" button or outside the dialog
+                                // You can add code for what should happen when the cancel button is clicked or the dialog is dismissed
+                            }
+                        });
+                    }
+            </script>
+    </body>
+
+    </html>

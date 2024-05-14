@@ -1,0 +1,72 @@
+<%-include ("../Includes/Admin/head.ejs")%>
+
+    <body>
+        <script src="/assets/static/js/initTheme.js"></script>
+        <div id="app">
+            <%-include ("../Includes/Admin/header.ejs")%>
+                <div id="main" class='layout-navbar navbar-fixed'>
+                    <%-include ("../Includes/Admin/header_top.ejs")%>
+                        <div id="main-content">
+
+                            <div class="page-heading">
+                                <div class="page-title">
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 order-md-1 order-last">
+                                            <h3>Bookings</h3>
+                                            <p class="text-subtitle text-muted">Check all booking by routes.</p>
+                                        </div>
+                                        <div class="col-12 col-md-6 order-md-2 order-first">
+                                            <nav aria-label="breadcrumb"
+                                                class="breadcrumb-header float-start float-lg-end">
+                                                <ol class="breadcrumb">
+                                                    <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                                                    <li class="breadcrumb-item active" aria-current="page">Booking
+                                                    </li>
+                                                </ol>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                                <section class="section">
+                                    <div class="row">
+                                        <%if (routes.length > 0) {%>
+                                            <% routes.forEach((route) => { %>
+                                                <div class="col-lg-4">
+                                                    <a href="/admin/booking/route/<%= route.route_id %>">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <h4 class="card-title">
+                                                                    <%= route.start_point %> - <%= route.end_point %>
+                                                                </h4>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            <% }) %>
+                                        <%} else {%>
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h4 class="card-title">
+                                                        No available bookings
+                                                    </h4>
+                                                 
+                                                </div>
+                                            </div>
+                                            <%}%>
+                                        
+                                    </div>
+
+
+                                </section>
+                            </div>
+
+                        </div>
+
+                </div>
+        </div>
+        <%-include ("../Includes/Admin/script.ejs")%>
+
+
+    </body>
+
+    </html>

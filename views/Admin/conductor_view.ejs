@@ -1,0 +1,121 @@
+<%-include ("../Includes/Admin/head.ejs")%>
+
+    <body>
+        <script src="/assets/static/js/initTheme.js"></script>
+        <div id="app">
+            <%-include ("../Includes/Admin/header.ejs")%>
+                <div id="main" class='layout-navbar navbar-fixed'>
+                    <%-include ("../Includes/Admin/header_top.ejs")%>
+                        <div id="main-content">
+
+                            <div class="page-heading">
+                                <div class="page-title">
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 order-md-1 order-last">
+                                            <h3>Conductor Report</h3>
+                                            <p class="text-subtitle text-muted">Check all conductor report.</p>
+                                        </div>
+                                        <div class="col-12 col-md-6 order-md-2 order-first">
+                                            <nav aria-label="breadcrumb"
+                                                class="breadcrumb-header float-start float-lg-end">
+                                                <ol class="breadcrumb">
+                                                    <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                                                    <li class="breadcrumb-item"><a href="/admin/conductor">Conductor</a></li>
+                                                    <li class="breadcrumb-item active" aria-current="page">Conductor Report
+                                                    </li>
+                                                </ol>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                                <section class="section">
+                                    <div class="card">
+
+                                        <div class="card-body">
+                                         
+                                            <div class="table-responsive-md">
+                                                <table id="conductorReport" class="table table-hover " style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Route ID</th>
+                                                            <th>Bus Number</th>
+                                                            <th>Departure</th>
+                                                            <th>Arrival</th>
+                                                            <th>Added Passenger</th>
+                                                            <th>Total Fare</th>
+                                                        
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <%conductor_report.forEach((conductor,index)=> {%>
+                                                            <tr>
+                                                                <td>
+                                                                    <%=index + 1%>
+                                                                </td>
+                                                                <td>
+                                                                    <%=conductor.route_id%>
+
+                                                                </td>
+                                                                <td>
+                                                                    <%=conductor.bus_number%>
+
+                                                                </td>
+                                                                <td>
+                                                                    <%= new Intl.DateTimeFormat('en-US', {month: 'short' , day: '2-digit' ,
+                                                                    year: 'numeric' }).format(conductor.departure_date) %> - <%=conductor.departure_time%>
+
+                                                                </td>
+                                                                <td>
+                                                                    <%= new Intl.DateTimeFormat('en-US', {month: 'short' , day: '2-digit' ,
+                                                                    year: 'numeric' }).format(conductor.departure_date) %> - <%=conductor.arrival_time%>
+
+                                                                </td>
+                                                                <td>
+                                                                    <%=conductor.addedPassenger%>
+
+                                                                </td>
+                                                                <td>
+                                                                    <%=conductor.fare_paid%>
+
+                                                                </td>
+                                                            </tr>
+                                                            <%})%>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+
+                        </div>
+                </div>
+           
+        </div>
+        <%-include ("../Includes/Admin/script.ejs")%>
+
+            <script src="/js/jquery.js"></script>
+            <script src="/vendor/datatables/datatables.js"></script>
+            <script src="/vendor/datatables/datatables.bootstrap.js"></script>
+
+
+            <script src="/vendor/datatables/buttons_datatables.js"></script>
+
+            <script src="/vendor/datatables/jszip_datatables.js"></script>
+            <script src="/vendor/datatables/pdfmake_datatables.js"></script>
+            <script src="/vendor/datatables/vfs_fonts_datatables.js"></script>
+            <script src="/vendor/datatables/buttons_html5_datatables.js"></script>
+            <script>
+                new DataTable('#conductorReport', {
+
+
+                });
+            </script>
+
+           
+    </body>
+
+    </html>

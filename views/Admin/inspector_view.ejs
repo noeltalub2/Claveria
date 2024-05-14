@@ -1,0 +1,116 @@
+<%-include ("../Includes/Admin/head.ejs")%>
+
+    <body>
+        <script src="/assets/static/js/initTheme.js"></script>
+        <div id="app">
+            <%-include ("../Includes/Admin/header.ejs")%>
+                <div id="main" class='layout-navbar navbar-fixed'>
+                    <%-include ("../Includes/Admin/header_top.ejs")%>
+                        <div id="main-content">
+
+                            <div class="page-heading">
+                                <div class="page-title">
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 order-md-1 order-last">
+                                            <h3>Inspector Report</h3>
+                                            <p class="text-subtitle text-muted">Check all inspector report.</p>
+                                        </div>
+                                        <div class="col-12 col-md-6 order-md-2 order-first">
+                                            <nav aria-label="breadcrumb"
+                                                class="breadcrumb-header float-start float-lg-end">
+                                                <ol class="breadcrumb">
+                                                    <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                                                    <li class="breadcrumb-item"><a href="/admin/inspector">Inspector</a></li>
+                                                    <li class="breadcrumb-item active" aria-current="page">Inspector Report
+                                                    </li>
+                                                </ol>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                                <section class="section">
+                                    <div class="card">
+
+                                        <div class="card-body">
+                                         
+                                            <div class="table-responsive-md">
+                                                <table id="inspectorReport" class="table table-hover " style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Route ID</th>
+                                                            <th>Bus Number</th>
+                                                            <th>Date</th>
+                                                            <th>Arrival Time</th>
+                                                            <th>Added Passenger</th>
+                                                        
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <%inspector_report.forEach((inspector,index)=> {%>
+                                                            <tr>
+                                                                <td>
+                                                                    <%=index + 1%>
+                                                                </td>
+                                                                <td>
+                                                                    <%=inspector.route_id%>
+
+                                                                </td>
+                                                                <td>
+                                                                    <%=inspector.bus_number%>
+
+                                                                </td>
+                                                                <td>
+                                                                    <%= new Intl.DateTimeFormat('en-US', {month: 'short' , day: '2-digit' ,
+                                                                    year: 'numeric' }).format(inspector.date) %>
+
+                                                                </td>
+                                                                <td>
+                                                                    <%=inspector.arrival_time%>
+
+                                                                </td>
+                                                                <td>
+                                                                    <%=inspector.added_passenger%>
+
+                                                                </td>
+                                                         
+                                                            </tr>
+                                                            <%})%>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+
+                        </div>
+                </div>
+           
+        </div>
+        <%-include ("../Includes/Admin/script.ejs")%>
+
+            <script src="/js/jquery.js"></script>
+            <script src="/vendor/datatables/datatables.js"></script>
+            <script src="/vendor/datatables/datatables.bootstrap.js"></script>
+
+
+            <script src="/vendor/datatables/buttons_datatables.js"></script>
+
+            <script src="/vendor/datatables/jszip_datatables.js"></script>
+            <script src="/vendor/datatables/pdfmake_datatables.js"></script>
+            <script src="/vendor/datatables/vfs_fonts_datatables.js"></script>
+            <script src="/vendor/datatables/buttons_html5_datatables.js"></script>
+            <script>
+                new DataTable('#inspectorReport', {
+
+
+                });
+            </script>
+
+           
+    </body>
+
+    </html>

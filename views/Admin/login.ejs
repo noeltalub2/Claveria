@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Admin Dashboard</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="manifest" href="/icons/site.webmanifest">
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="stylesheet" crossorigin href="/assets/compiled/css/app.css">
+    <link rel="stylesheet" crossorigin href="/assets/compiled/css/app-dark.css">
+    <link rel="stylesheet" crossorigin href="/assets/compiled/css/auth.css">
+</head>
+
+<body>
+    <script src="/assets/static/js/initTheme.js"></script>
+    <div id="auth">
+
+        <div class="row h-100">
+            <div class="col-lg-5 col-12">
+                <div id="auth-left">
+                    <div class="auth-logo">
+                        <a href="/"><img src="/images/logo.png" alt="Logo"><span class="fs-3 ms-2">Claveria
+                                Tours Inc.</span></a>
+                    </div>
+                    <h1 class="auth-title">Log in.</h1>
+
+
+                    <form action="/admin/login" method="post">
+                        <div class="form-group position-relative has-icon-left mb-4">
+                            <input type="text" class="form-control form-control-lg" placeholder="Username" name="username" autofocus>
+                            <div class="form-control-icon">
+                                <i class="bi bi-person"></i>
+                            </div>
+                        </div>
+                        <div class="form-group position-relative has-icon-left mb-4">
+                            <input type="password" class="form-control form-control-lg" placeholder="Password" name="password">
+                            <div class="form-control-icon">
+                                <i class="bi bi-shield-lock"></i>
+                            </div>
+                        </div>
+                        <!-- <div class="form-check form-check-lg d-flex align-items-end">
+                            <input class="form-check-input me-2" type="checkbox" value="" id="flexCheckDefault">
+                            <label class="form-check-label text-gray-600" for="flexCheckDefault">
+                                Keep me logged in
+                            </label>
+                        </div> -->
+                        <button class="btn btn-primary btn-block btn-lg shadow-lg mt-3">Log in</button>
+                    </form>
+
+                </div>
+            </div>
+            <div class="col-lg-7 d-none d-lg-block">
+                <div id="auth-right">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script> // Example of embedding EJS variables directly into JavaScript
+
+
+        <% if (error != "") { %>
+        
+            var errorMessages = "<%= error.map(errors => errors.msg).join(', ') %>";
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: errorMessages,
+                    showConfirmButton: false,
+                    timer: 2000
+                })
+                    <% } %>
+            
+        <% if (error_msg != '') { %>
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: '<%=error_msg%>',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                <% } %>
+        
+            
+         
+        <% if (success_msg != '') { %>
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '<%=success_msg%>',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                <% } %>
+        
+        
+        </script>
+</body>
+
+</html>

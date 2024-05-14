@@ -120,8 +120,9 @@
                     <select class="form-select" id="floatingSelect1" aria-label="Floating label select example"
                       name="destination" required>
                       <option selected disabled value="">Travel Location</option>
-                      <option value="1">Claveria to Laoag</option>
-                      <option value="2">Laoag to Claveria</option>
+                      <%routes.forEach((route) => {%>
+                        <option value="<%=route.route_id%>"><%=route.start_point%> - <%=route.end_point%></option>
+                      <%})%>
                     </select>
                     <label for="floatingSelect1">Routes</label>
                   </div>

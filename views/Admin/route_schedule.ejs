@@ -1,0 +1,233 @@
+<%-include ("../Includes/Admin/head.ejs")%>
+
+    <body>
+        <script src="/assets/static/js/initTheme.js"></script>
+        <div id="app">
+            <%-include ("../Includes/Admin/header.ejs")%>
+                <div id="main" class='layout-navbar navbar-fixed'>
+                    <%-include ("../Includes/Admin/header_top.ejs")%>
+                        <div id="main-content">
+
+                            <div class="page-heading">
+                                <div class="page-title">
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 order-md-1 order-last">
+                                            <h3>Route Schedule</h3>
+                                            <p class="text-subtitle text-muted">Check all available route schedule.</p>
+                                        </div>
+                                        <div class="col-12 col-md-6 order-md-2 order-first">
+                                            <nav aria-label="breadcrumb"
+                                                class="breadcrumb-header float-start float-lg-end">
+                                                <ol class="breadcrumb">
+                                                    <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                                                    <li class="breadcrumb-item active" aria-current="page">Route
+                                                        Schedule
+                                                    </li>
+                                                </ol>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <section class="section">
+                                    <div class="card">
+
+                                        <div class="card-body">
+                                            <div class="mb-2 row justify-content-end">
+                                                <div class="col-auto">
+                                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                        data-bs-target="#exampleModal">
+                                                        <i class="bi bi-plus-circle"></i> Add Schedule
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="table-responsive-md">
+                                                <table id="routeTable" class="table table-hover " style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Schedule Id</th>
+                                                            <th>Bus</th>
+                                                            <th>Origin</th>
+                                                            <th>Destination</th>
+                                                            <th>Departure</th>
+                                                            <th>Arrival</th>
+                                                            <th>Status</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <%route_schedule.forEach((route,index)=> {%>
+                                                            <tr>
+                                                                <td>
+                                                                    <%=index + 1%>
+                                                                </td>
+                                                                <td>
+                                                                    <%=route.schedule_id%>
+                                                                </td>
+                                                                <td>
+                                                                    <%=route.bus_number%>
+                                                                </td>
+                                                                <td>
+                                                                    <%=route.start_point%>
+                                                                </td>
+                                                                <td>
+                                                                    <%=route.end_point%>
+                                                                </td>
+
+                                                                <td>
+                                                                    <%= new Intl.DateTimeFormat('en-US', {month: 'short'
+                                                                        , day: '2-digit' , year: 'numeric' }).format(new
+                                                                        Date(route.departure_date)) %> <br>
+                                                                        <%=route.departure_time%>
+                                                                </td>
+
+                                                                <td>
+                                                                    <%= new Intl.DateTimeFormat('en-US', {month: 'short'
+                                                                        , day: '2-digit' , year: 'numeric' }).format(new
+                                                                        Date(route.departure_date)) %> <br>
+                                                                        <%=route.arrival_time%>
+                                                                </td>
+
+                                                                <td>
+                                                                    <span class="badge <%= 
+                                                           
+                                                                route.status === 'Inactive' ? 'bg-danger' : 
+                                                                route.status === 'Active' ? 'bg-success' : 
+                                                                'bg-secondary' // Default case if none of the above
+                                                            %>">
+                                                                        <%= route.status %>
+                                                                    </span>
+                                                                </td>
+
+                                                                <td>
+                                                                    <a href="/admin/route-schedule/walkin/<%=route.schedule_id%>"
+                                                                        class="btn mb-1 btn-sm btn-primary">
+                                                                        <i class="bi bi-plus-circle"></i> Add Booking
+                                                                    </a>
+
+                                                                </td>
+                                                            </tr>
+                                                            <%})%>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+
+                        </div>
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add Schedule</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <form action="/admin/route-schedule/add" method="post">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label for="dateLabel">Departure Date</label>
+                                                    <input type="date" min="<%= new Date().toISOString().split('T')[0] %>" class="form-control" name="departureDate"
+                                                        required>
+                                                </div>
+
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="routeSelect" class="form-label">Select Route</label>
+
+                                                <select class="form-select" id="routeSelect" name="route" required>
+                                                    <option value="" hidden selected></option>
+                                                    <% routes.forEach(function(route) { %>
+                                                        <option value="<%= route.route_id %>">
+                                                            <%= route.start_point %> - <%= route.end_point %>
+                                                        </option>
+                                                        <% }) %>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <fieldset class="form-group">
+                                                    <label for="busesLabel">Conductor</label>
+                                                    <select class="form-select" id="basicSelect" name="conductor"
+                                                        required>
+                                                        <option value="" hidden selected></option>
+                                                        <% conductors.forEach(function(conductor) { %>
+                                                            <option value="<%= conductor.cnd_id %>">
+                                                                <%= conductor.fullname %>
+                                                            </option>
+                                                            <% }) %>
+                                                    </select>
+
+                                                </fieldset>
+                                            </div>
+                                            <div class="mb-3">
+                                                <fieldset class="form-group">
+                                                    <label for="busesLabel">Bus Number</label>
+                                                    <select class="form-select" id="basicSelect" name="bus" required>
+                                                        <option value="" hidden selected></option>
+                                                        <% buses.forEach(function(bus) { %>
+                                                            <option value="<%= bus.bus_id %>">
+                                                                <%= bus.bus_number %>
+                                                            </option>
+                                                            <% }) %>
+                                                    </select>
+
+                                                </fieldset>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label for="timeLabel">Departure Time</label>
+                                                    <input type="time" class="form-control" name="departureTime"
+                                                        required>
+                                                </div>
+
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-group">
+                                                    <label for="arrivalLabel">Arrival Time</label>
+                                                    <input type="time" class="form-control" name="arrivalTime" required>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Add Schedule</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+        </div>
+        <%-include ("../Includes/Admin/script.ejs")%>
+            <script src="/js/jquery.js"></script>
+            <script src="/vendor/datatables/datatables.js"></script>
+            <script src="/vendor/datatables/datatables.bootstrap.js"></script>
+
+
+            <script src="/vendor/datatables/buttons_datatables.js"></script>
+
+            <script src="/vendor/datatables/jszip_datatables.js"></script>
+            <script src="/vendor/datatables/pdfmake_datatables.js"></script>
+            <script src="/vendor/datatables/vfs_fonts_datatables.js"></script>
+            <script src="/vendor/datatables/buttons_html5_datatables.js"></script>
+            <script>
+                new DataTable('#routeTable', {
+
+
+                });
+            </script>
+
+    </body>
+
+    </html>

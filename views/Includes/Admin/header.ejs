@@ -1,0 +1,72 @@
+<div id="sidebar">
+    <div class="sidebar-wrapper active">
+        <div class="sidebar-header position-relative">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="logo">
+                    <a href="/admin"><img src="/images/logo.png" alt="Logo" srcset=""><span class="fs-5">
+                            Claveria
+                            Tours Inc.</span></a>
+                </div>
+                <div class="sidebar-toggler  x">
+                    <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <ul class="menu">
+                <li class="sidebar-title">Menu</li>
+
+                <li class="sidebar-item <%=page === 'dashboard' ? 'active' : ''%>">
+                    <a href="/admin/" class="sidebar-link">
+                        <i class="bi bi-grid-fill"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-item <%=page === 'booking' ? 'active' : ''%>">
+                    <a href="/admin/booking" class="sidebar-link">
+                        <i class="bi bi-book-fill"></i>
+                        <span>Booking</span>
+                    </a>
+                </li>
+                <li class="sidebar-item <%=page === 'route_schedule' ? 'active' : ''%>">
+                    <a href="/admin/route-schedule" class="sidebar-link">
+                        <i class="bi bi-calendar2-week-fill"></i>
+                        <span>Route Schedule</span>
+                    </a>
+                </li>
+                <li class="sidebar-item <%=page === 'routes' ? 'active' : ''%>">
+                    <a href="/admin/routes" class="sidebar-link">
+                        <i class="bi bi-signpost-2-fill"></i>
+                        <span>Routes</span>
+                    </a>
+                </li>
+                <li class="sidebar-item <%=page === 'transaction' ? 'active' : ''%>">
+                    <a href="/admin/transaction-history" class="sidebar-link">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Transaction History</span>
+                    </a>
+                </li>
+                <li class="sidebar-item <%=page === 'bus' ? 'active' : ''%>">
+                    <a href="/admin/bus" class="sidebar-link">
+                        <i class="bi bi-bus-front"></i>
+                        <span>Bus</span>
+                    </a>
+                </li>
+                <li class="sidebar-item <%=page === 'inspector' ? 'active' : ''%>">
+                    <a href="/admin/inspector" class="sidebar-link">
+                        <i class="bi bi-person-badge-fill"></i>
+                        <span>Inspector</span>
+                    </a>
+                </li>
+                <li class="sidebar-item <%=page === 'conductor' ? 'active' : ''%>">
+                    <a href="/admin/conductor" class="sidebar-link">
+                        <i class="bi bi-person-lines-fill"></i>
+                        <span>Conductor</span>
+                    </a>
+                </li>
+
+
+            </ul>
+        </div>
+    </div>
+</div>

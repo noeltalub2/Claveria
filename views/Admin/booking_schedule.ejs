@@ -1,0 +1,167 @@
+<%-include ("../Includes/Admin/head.ejs")%>
+
+    <body>
+        <script src="/assets/static/js/initTheme.js"></script>
+        <div id="app">
+            <%-include ("../Includes/Admin/header.ejs")%>
+                <div id="main" class='layout-navbar navbar-fixed'>
+                    <%-include ("../Includes/Admin/header_top.ejs")%>
+                        <div id="main-content">
+
+                            <div class="page-heading">
+                                <div class="page-title">
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 order-md-1 order-last">
+                                            <h3>Bookings</h3>
+                                            <p class="text-subtitle text-muted">Check all booking by user.
+                                            </p>
+                                        </div>
+                                        <div class="col-12 col-md-6 order-md-2 order-first">
+                                            <nav aria-label="breadcrumb"
+                                                class="breadcrumb-header float-start float-lg-end">
+                                                <ol class="breadcrumb">
+                                                    <li class="breadcrumb-item"><a href="/admin/">Dashboard</a></li>
+                                                    <li class="breadcrumb-item"><a href="/admin/booking">Booking</a>
+                                                    </li>
+                                                    <li class="breadcrumb-item"><a
+                                                            href="/admin/booking/route/<%=route_id%>">Route</a></li>
+                                                    <li class="breadcrumb-item active" aria-current="page">Schedule
+                                                    </li>
+                                                </ol>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <section class="section">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title mb-0">
+                                                <%=schedule_details.origin%> - <%=schedule_details.destination%> <br>
+                                            </h3>
+                                            <p class="mb-1 mt-0">
+                                                <%= new Intl.DateTimeFormat('en-US', {month: 'short' , day: '2-digit' ,
+                                                    year: 'numeric' }).format(new Date(schedule_details.departure_date))
+                                                    %> - <%=schedule_details.departure_time%>
+                                            </p>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive-md">
+                                                <table id="bookingTable" class="table table-hover " style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Full Name</th>
+                                                            <th>Contact</th>
+                                                            <th>Booking Date</th>
+                                                            <th>Booking Expiration</th>
+                                                            <th>Seat Numbers</th>
+                                                            <th>Fare</th>
+                                                            <th>Status</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <%booking_schedule.forEach((booking,index)=> {%>
+                                                            <tr>
+                                                                <td>
+                                                                    <%=index + 1%>
+                                                                </td>
+                                                                <td>
+                                                                    <%=booking.fullname%>
+                                                                </td>
+                                                                <td>
+                                                                    <%=booking.contact%>
+                                                                </td>
+                                                                <td>
+                                                                    <%= new Intl.DateTimeFormat('en-US', {month: 'short'
+                                                                        , day: '2-digit' , year: 'numeric' }).format(new
+                                                                        Date(booking.booking_date)) %>
+
+                                                                </td>
+                                                                <td>
+                                                                    <%= new Intl.DateTimeFormat('en-US', {month: 'short'
+                                                                        , day: '2-digit' , year: 'numeric' }).format(new
+                                                                        Date(booking.booking_expiration)) %>
+
+                                                                </td>
+                                                                <td>
+                                                                    <%=booking.seat_numbers%>
+                                                                </td>
+                                                                <td>
+
+                                                                    ₱ <%=booking.fare_paid%>
+                                                                </td>
+
+                                                                <td>
+                                                                    <span class="badge <%= 
+                                                                        booking.status === 'Pending' ? 'bg-warning' : 
+                                                                        booking.status === 'Cancelled' ? 'bg-danger' : 
+                                                                        booking.status === 'Paid' ? 'bg-success' : 
+                                                                        'bg-secondary' // Default case if none of the above
+                                                                    %>">
+                                                                        <%= booking.status %>
+                                                                    </span>
+                                                                </td>
+
+
+                                                                <td>
+                                                                    <a href="/admin/booking/route/schedule/view/<%=booking.booking_id%>"
+                                                                        class="btn mb-1 btn-sm btn-primary">
+                                                                        <i class="bi bi-pencil"></i> View Booking
+                                                                    </a>
+
+                                                                </td>
+                                                            </tr>
+                                                            <%})%>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+                                </section>
+                            </div>
+
+                        </div>
+
+                </div>
+        </div>
+        <%-include ("../Includes/Admin/script.ejs")%>
+
+            <script src="/js/jquery.js"></script>
+            <script src="/vendor/datatables/datatables.js"></script>
+            <script src="/vendor/datatables/datatables.bootstrap.js"></script>
+
+
+            <script src="/vendor/datatables/buttons_datatables.js"></script>
+
+            <script src="/vendor/datatables/jszip_datatables.js"></script>
+            <script src="/vendor/datatables/pdfmake_datatables.js"></script>
+            <script src="/vendor/datatables/vfs_fonts_datatables.js"></script>
+            <script src="/vendor/datatables/buttons_html5_datatables.js"></script>
+            <script>
+                new DataTable('#bookingTable', {
+                    layout: {
+                        topStart: {
+                            buttons: [
+
+                                {
+                                    text: 'Download',
+                                    extend: 'excelHtml5',
+                                    autoFilter: true, title: "Booking Report: <%=schedule_details.origin%> to <%=schedule_details.destination%> (<%= new Intl.DateTimeFormat('en-US', {month: 'short' , day: '2-digit' , year: 'numeric' }).format(new Date(schedule_details.departure_date)) + ' - ' + schedule_details.departure_time %>)",
+                                    sheetName: 'Bookings', className: "btn btn-success btn-sm ", filename: `Booking Report: <%=schedule_details.origin%> to <%=schedule_details.destination%> ((<%= new Intl.DateTimeFormat('en-US', {month: 'short' , day: '2-digit' , year: 'numeric' }).format(new Date(schedule_details.departure_date)) + ' - ' + schedule_details.departure_time %>))`,exportOptions: {
+                                        columns: ':not(:last-child)'
+                                    }
+                                }
+                            ]
+                        }
+                    }
+
+                });
+            </script>
+    </body>
+
+    </html>

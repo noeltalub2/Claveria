@@ -523,10 +523,14 @@
                         </div>
                         <div class="fare">
                             <div class="p-4 rounded-4 shadow-sm">
+                                <p class="">Drop Off Point: <span class="highlight float-end">
+                                    <%=booking_details.drop_off %>
+                                </span> </p>
                                 <p class="mb-0">Fare: <span class="highlight float-end">
-                                        ₱ <%=booking_details.fare%>
-                                    </span> </p>
-                                <p></p>
+                                    ₱ <%= Number(booking_details.fare_paid) / Number(booking_details.count) %>
+                                </span></p>
+                                
+                             
                             </div>
                         </div>
                         <div class="Subtotal">

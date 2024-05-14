@@ -32,6 +32,19 @@
 
     <title>Claveria Bus Booking</title>
     <style>
+        #fare_inp {
+            text-align: right;
+            color: #3f9fbd !important;
+            /* Forces this color, overriding other styles */
+        }
+
+        #fare_inp::placeholder {
+            color: #3f9fbd;
+            /* Teal color for the placeholder */
+            text-align: right;
+            /* Align placeholder text to the right */
+        }
+
         #seat_status {
             scroll-margin-top: 60px;
             /* Adjust the value as needed */
@@ -252,12 +265,20 @@
                                         <div class="p-4 rounded-4 shadow-sm">
                                             <div class="boarding-details mb-3">
                                                 <span class="badge rounded-pill mb-1  fs-6"
+                                                    style="background-color: #388da8bf;">ID: 
+                                                    <%=booking.schedule_id%>
+                                                </span>
+                                                <span class="badge rounded-pill mb-1  fs-6"
                                                     style="background-color: #388da8bf;">₱
                                                     <%=booking.fare%>
                                                 </span>
                                                 <span class="badge rounded-pill mb-1  fs-6"
-                                                style="background-color: #388da8bf;">Bus Number: 
-                                                <%=booking.bus_number%>
+                                                    style="background-color: #388da8bf;">Bus Number:
+                                                    <%=booking.bus_number%>
+                                                </span>
+                                                <span class="badge rounded-pill mb-1  fs-6"
+                                                style="background-color: #388da8bf;">Type:
+                                                <%=booking.bus_type%>
                                             </span>
                                                 <span class="badge rounded-pill  fs-6"
                                                     style="background-color: #388da8bf;">Boarding Time:
@@ -273,8 +294,8 @@
                                             <div class="booking-details">
                                                 <div class="row">
                                                     <div class="col-lg-9">
-                                                        <p class="mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                height="16" fill="currentColor"
+                                                        <p class="mb-1"><svg xmlns="http://www.w3.org/2000/svg"
+                                                                width="16" height="16" fill="currentColor"
                                                                 class="bi bi-person-fill" viewBox="0 0 16 16">
                                                                 <path
                                                                     d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
@@ -282,9 +303,9 @@
                                                                 <%=booking.available_seats%>
                                                             </span>
                                                         </p>
-                                                        <p class="mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                height="16" fill="currentColor" class="bi bi-clock"
-                                                                viewBox="0 0 16 16">
+                                                        <p class="mb-1"><svg xmlns="http://www.w3.org/2000/svg"
+                                                                width="16" height="16" fill="currentColor"
+                                                                class="bi bi-clock" viewBox="0 0 16 16">
                                                                 <path
                                                                     d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z" />
                                                                 <path
@@ -349,7 +370,8 @@
                     </div>
                 </div>
                 <% if (available_schedule.length !==0) {%>
-                    <div class="col-lg-5">
+                    <div class="col-lg-5" id="booking_scroll">
+                        <form id="bookingForm">
                         <div class="d-none" id="seat_container">
                             <div class="p-4 rounded-4 shadow-sm text-center">
                                 <h4 class="fw-bold">Choose Seat</h4>
@@ -685,221 +707,317 @@
                                         </span></p>
                                 </div>
                             </div>
+
                             <div class="fare">
                                 <div class="p-4 rounded-4 shadow-sm">
-                                    <p class="mb-0">Fare: <span class="highlight float-end">
-                                            ₱ 0.00
-                                        </span> </p>
-                                    <p></p>
+                                    <div class="drop_off">
+
+                                        <div class="row justify-content-between">
+                                            <div class="col-md-6">
+                                                <label for="exampleFormControlInput2" class="form-label">Drop Off
+                                                    Point:</label>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control form-control-sm dropdown-toggle"
+                                                    id="autocompleteInput" name="drop_off" placeholder="Search..."
+                                                    data-bs-toggle="dropdown" aria-expanded="false" required>
+                                                <ul id="autocompleteList" class="dropdown-menu"
+                                                    style="max-height: 200px; overflow-y: auto;"
+                                                    aria-labelledby="autocompleteInput"></ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fare">
+                                        <div class="row justify-content-between">
+                                            <div class="col-8 ">
+                                                <label for="fare" class="col-form-label ">Fare:</label>
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="text" class="form-control-plaintext" id="fare_inp"
+                                                    name="fare" placeholder="₱: 0.00" required readonly
+                                                    style="text-align: right; color: #3f9fbd !important; ">
+                                                <input type="hidden" class="" id="fare_inp2" name="fare2" ">
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
-                            <div class="Subtotal">
+                            <div class=" subtotal">
                                 <div class="p-4 rounded-4 shadow-sm">
                                     <p>Departure (<%=passengerCount%> pax)</p>
-                                    <p class="mb-0">Subtotal (<%=passengerCount%> pax)<span class="highlight float-end"
-                                                id="sub_total">
+                                    <p class="mb-0">Subtotal (<%=passengerCount%> pax)<span
+                                                class="highlight float-end" id="sub_total">
                                                 ₱ 0.00
                                             </span> </p>
-                                    <p></p>
+
                                 </div>
                             </div>
-                            <div class="total">
-                                <div class="p-4 rounded-4 shadow-sm">
+                        <div class="total">
+                            <div class="p-4 rounded-4 shadow-sm">
 
-                                    <p class="mb-0">Total: <span class="highlight float-end fs-5">
-                                            ₱ 0.00
-                                        </span> </p>
-                                    <p></p>
-                                </div>
+                                <p class="mb-0">Total: <span class="highlight float-end fs-5">
+                                        ₱ 0.00
+                                    </span> </p>
+                                <p></p>
                             </div>
-                            <form id="bookingForm">
-                                <input type="hidden" value="" id="sch_inp">
-                                <input type="hidden" value="" id="fare_inp">
-                                <div class="term">
-                                    <div class="p-4 rounded-4 shadow-sm">
-
-                                        <input type="checkbox" class="form-check-input" id="exampleCheck1" required>
-                                        <label class="form-check-label small" for="exampleCheck1"> I agree to Terms and
-                                            Conditions
-                                            & Privacy Policy</label>
-
-                                    </div>
-                                </div>
-                                <div class="confirm">
-                                    <div class="p-4 rounded-4 shadow-sm">
-                                        <%if (user.role==='guess' ) {%>
-                                            <a href="/login" class="btn book-btn-1" type="button">Book
-                                                Seats</a>
-                                            <%} else {%>
-                                                <button id="submitBtn" class="book-btn">Book Seats</button>
-                                                <%}%>
-
-                                    </div>
-                                </div>
-                            </form>
                         </div>
 
+                        <input type="hidden" value="" id="sch_inp">
+
+                        <div class="term">
+                            <div class="p-4 rounded-4 shadow-sm">
+
+                                <input type="checkbox" class="form-check-input" id="exampleCheck1"
+                                    required>
+                                <label class="form-check-label small" for="exampleCheck1"> I
+                                    agree to Terms and
+                                    Conditions
+                                    & Privacy Policy</label>
+
+                            </div>
+                        </div>
+                        <div class="confirm">
+                            <div class="p-4 rounded-4 shadow-sm">
+                                <%if (user.role==='guess' ) {%>
+                                    <a href="/login" class="btn book-btn-1" type="button">Book
+                                        Seats</a>
+                                    <%} else {%>
+                                        <button id="submitBtn" class="book-btn">Book
+                                            Seats</button>
+                                        <%}%>
+
+                            </div>
+                        </div>
 
                     </div>
-                    <%}%>
+
+                </form>
+                </div>
+                <%}%>
 
             </div>
 
 
-            <!-- Scroll Top -->
-            <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
-                    class="bi bi-arrow-up-short"></i></a>
+                                <!-- Scroll Top -->
+                                <a href="#" id="scroll-top"
+                                    class="scroll-top d-flex align-items-center justify-content-center"><i
+                                        class="bi bi-arrow-up-short"></i></a>
 
-            <!-- Preloader -->
-            <div id="preloader"></div>
+                                <!-- Preloader -->
+                                <div id="preloader"></div>
 
-            <!-- Vendor JS Files -->
-            <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-            <script src="/assets/vendor/aos/aos.js"></script>
-            <script src="/assets/vendor/glightbox/js/glightbox.min.js"></script>
-            <script src="/assets/vendor/swiper/swiper-bundle.min.js"></script>
-            <script src="/vendor/sweetalert/sweetalert.js"></script>
-            <!-- Main JS File -->
-            <script src="/assets/js/main.js"></script>
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    const maxSeats = <%=passengerCount%>;  // Maximum seats a user can select, adjust as needed
-                    const seats = document.querySelectorAll('.seat.available');
-                    const seatStatus = document.getElementById('seat_status');
-                    const form = document.getElementById('bookingForm');
+                                <!-- Vendor JS Files -->
+                                <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+                                <script src="/assets/vendor/aos/aos.js"></script>
+                                <script src="/assets/vendor/glightbox/js/glightbox.min.js"></script>
+                                <script src="/assets/vendor/swiper/swiper-bundle.min.js"></script>
+                                <script src="/vendor/sweetalert/sweetalert.js"></script>
+                                <!-- Main JS File -->
+                                <script src="/assets/js/main.js"></script>
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", function () {
+                                        const maxSeats = <%=passengerCount%>;  // Maximum seats a user can select, adjust as needed
+                                        const seats = document.querySelectorAll('.seat.available');
+                                        const seatStatus = document.getElementById('seat_status');
+                                        const booking_scroll = document.getElementById('booking_scroll');
+                                        const form = document.getElementById('bookingForm');
 
-                    seats.forEach(function (seat) {
-                        seat.addEventListener('click', function () {
-                            // Count how many seats are currently selected
-                            const selectedSeats = document.querySelectorAll('.seat.selected').length;
+                                        seats.forEach(function (seat) {
+                                            seat.addEventListener('click', function () {
+                                                // Count how many seats are currently selected
+                                                const selectedSeats = document.querySelectorAll('.seat.selected').length;
 
-                            // Check if the seat is already selected
-                            if (this.classList.contains('selected')) {
-                                this.classList.remove('selected');
-                            } else if (selectedSeats < maxSeats) {
-                                // Only add 'selected' if we haven't reached the max limit
-                                this.classList.add('selected');
-                            } else {
-                                alert(`You can only select up to ${maxSeats} seats.`);
-                            }
-                        });
-                    });
+                                                // Check if the seat is already selected
+                                                if (this.classList.contains('selected')) {
+                                                    this.classList.remove('selected');
+                                                } else if (selectedSeats < maxSeats) {
+                                                    // Only add 'selected' if we haven't reached the max limit
+                                                    this.classList.add('selected');
+                                                } else {
+                                                    alert(`You can only select up to ${maxSeats} seats.`);
+                                                }
+                                            });
+                                        });
+                                        const routes = <%- JSON.stringify(sub_routes) %>;
+                                        const origins = routes.map(route => route.origin);
+                                        const fares = routes.map(route => route.fare);
+
+                                        document.getElementById('autocompleteInput').addEventListener('input', function () {
+                                            let input = this.value;
+                                          
+                                            let autocompleteList = document.getElementById('autocompleteList');
+                                            let fareInput = document.getElementById('fare_inp');
+                                            let fareInput2 = document.getElementById('fare_inp2');
+                                            let sub_total = document.querySelector('#sub_total')
+                                            let total = document.querySelector('.total .highlight');
+                                            autocompleteList.innerHTML = ''; // Clear previous autocomplete suggestions
+                                            fareInput.value = '₱ 0.00';
+                                            fareInput2.value = ''; // Clear fare field initially
+                                            sub_total.textContent = '₱ 0.00'
+                                            total.textContent = '₱ 0.00'
+                                            if (!input) {
+                                                autocompleteList.classList.remove('show');
+                                                return;
+                                            }
+
+                                            // Filter suggestions based on input
+                                            let suggestions = origins.filter(item => item.toLowerCase().startsWith(input.toLowerCase()));
+
+                                            if (suggestions.length === 0) {
+                                                fareInput.value = '₱ 0.00';
+                                                fareInput2.value = '';
+                                                sub_total.textContent = '₱ 0.00';
+                                                total.textContent = '₱ 0.00'; // Clear fare if no suggestions match
+                                            }
+
+                                            suggestions.forEach((filteredName, index) => {
+                                                let listItem = document.createElement('li');
+                                                listItem.classList.add('dropdown-item');
+                                                listItem.textContent = filteredName;
+                                                listItem.onclick = function () {
+                                                    document.getElementById('autocompleteInput').value = filteredName;
+                                                    fareInput.value = `₱ ${fares[origins.indexOf(filteredName)]}`;
+                                                    fareInput2.value = (fares[origins.indexOf(filteredName)]) * maxSeats;
+                                                    sub_total.textContent = `₱ ${(fares[origins.indexOf(filteredName)]) * maxSeats}`
+                                                    total.textContent = `₱ ${(fares[origins.indexOf(filteredName)]) * maxSeats}`
+                                                    autocompleteList.classList.remove('show');
+                                                };
+                                                autocompleteList.appendChild(listItem);
+                                            });
+
+                                            if (suggestions.length > 0) {
+                                                autocompleteList.classList.add('show');
+                                            } else {
+                                                autocompleteList.classList.remove('show');
+                                            }
+                                        });
+
+                                        form.addEventListener('submit', function (event) {
+                                            event.preventDefault(); // Prevent the default form submission
+                                            const apiUrl = '/postBookingDetails';
+                                                const sch_inp = document.querySelector("#sch_inp").value;
+                                                const fare_inp = document.querySelector("#fare_inp2").value;
+                                                const drop_off = document.querySelector("#autocompleteInput").value;
+
+                                            
+                                            const selectedSeats = document.querySelectorAll('.seat.selected');
+                                            const selectedSeatIds = Array.from(selectedSeats).map(seat => seat.getAttribute('data-id').trim());
 
 
-                    form.addEventListener('submit', function (event) {
-                        event.preventDefault(); // Prevent the default form submission
+                                            // Add alert if the maxSeats is not equal to what is selected
+                                            if (selectedSeats.length != maxSeats) {
+                                                seatStatus.innerText = `You have selected ${selectedSeats.length} seats, but the maximum allowed is ${maxSeats}. Please select the correct number of seats.`;
+                                                seatStatus.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                            } else if (fare_inp === '') {
+                                                Swal.fire({
+                                                            position: "top-end",
+                                                            icon: "error",
+                                                            title: `Invalid Drop Off Point`,
+                                                            showConfirmButton: false,
+                                                            timer: 2000
+                                                        })
+                                             } else {
+                                                // Define the API endpoint
+                                                
 
-                        const selectedSeats = document.querySelectorAll('.seat.selected');
-                        const selectedSeatIds = Array.from(selectedSeats).map(seat => seat.getAttribute('data-id').trim());
+                                                // Create the data object containing the schedule ID
+                                                const data = {
+                                                    sch_inp,
+                                                    fare_inp,
+                                                    selectedSeatIds,
+                                                    drop_off
+                                                };
 
-
-                        // Add alert if the maxSeats is not equal to what is selected
-                        if (selectedSeats.length != maxSeats) {
-                            seatStatus.innerText = `You have selected ${selectedSeats.length} seats, but the maximum allowed is ${maxSeats}. Please select the correct number of seats.`;
-                            seatStatus.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        } else {
-                            // Define the API endpoint
-                            const apiUrl = '/postBookingDetails';
-                            const sch_inp = document.querySelector("#sch_inp").value;
-                            const fare_inp = document.querySelector("#fare_inp").value;
-
-                            // Create the data object containing the schedule ID
-                            const data = {
-                                sch_inp,
-                                fare_inp,
-                                selectedSeatIds
-                            };
-
-                            // Use fetch API to make a POST request
-                            fetch(apiUrl, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify(data),
-                            })
-                                .then(response => response.json())
-                                .then(data => {
-                                    Swal.fire({
-                                        position: "top-end",
-                                        icon: "success",
-                                        title: `${data.message}`,
-                                        showConfirmButton: false,
-                                        timer: 2000
-                                    }).then(() => {
-                                        window.location.reload();
+                                                // Use fetch API to make a POST request
+                                                fetch(apiUrl, {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                    },
+                                                    body: JSON.stringify(data),
+                                                })
+                                                    .then(response => response.json())
+                                                    .then(data => {
+                                                        Swal.fire({
+                                                            position: "top-end",
+                                                            icon: "success",
+                                                            title: `${data.message}`,
+                                                            showConfirmButton: false,
+                                                            timer: 2000
+                                                        }).then(() => {
+                                                            window.location.reload();
+                                                        });
+                                                    })
+                                                    .catch((error) => {
+                                                        console.error('Error:', error);
+                                                    });
+                                            }
+                                        });
                                     });
-                                })
-                                .catch((error) => {
-                                    console.error('Error:', error);
-                                });
-                        }
-                    });
-                });
 
 
-                async function bookingDetails(sch_id) {
-                    // Define the API endpoint
-                    const apiUrl = '/getBookingDetails';
+                                    async function bookingDetails(sch_id) {
+                                        // Define the API endpoint
+                                        const apiUrl = '/getBookingDetails';
 
-                    // Create the data object containing the schedule ID
-                    const data = {
-                        sch_id
-                    };
+                                        // Create the data object containing the schedule ID
+                                        const data = {
+                                            sch_id
+                                        };
 
-                    // Use fetch API to make a POST request
-                    fetch(apiUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(data),
-                    })
-                        .then(response => response.json())
-                        .then(data => {
+                                        // Use fetch API to make a POST request
+                                        fetch(apiUrl, {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify(data),
+                                        })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                console.log(data)
+                                                const seat_containers = document.querySelectorAll('#seat_container');
 
-                            const seat_containers = document.querySelectorAll('#seat_container');
+                                                seat_container.classList.remove('d-none');
+                                                seat_container.classList.add('d-block');
 
-                            seat_container.classList.remove('d-none');
-                            seat_container.classList.add('d-block');
-
-
-                            // Reset all seats to available before updating based on new data
-                            const seats = document.querySelectorAll('.seat');
-                            seats.forEach(seat => {
-                                seat.classList.remove('selected');
-                                seat.classList.remove('unavailable', 'booked');
-                                seat.classList.add('available');
-                                seat.removeAttribute('disabled', 'disabled');
-                            });
+                                                booking_scroll.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                // Reset all seats to available before updating based on new data
+                                                const seats = document.querySelectorAll('.seat');
+                                                seats.forEach(seat => {
+                                                    seat.classList.remove('selected');
+                                                    seat.classList.remove('unavailable', 'booked');
+                                                    seat.classList.add('available');
+                                                    seat.removeAttribute('disabled', 'disabled');
+                                                });
 
 
-                            seats.forEach(seat => {
-                                const seatId = seat.dataset.id.trim(); // Ensure to trim any extra spaces
-                                if (data.available_seats.includes(parseInt(seatId))) {
-                                    seat.classList.remove('available');
-                                    seat.classList.add('unavailable', 'booked');
-                                    seat.setAttribute('disabled', 'disabled'); // Disable the seat
-                                }
-                            });
+                                                seats.forEach(seat => {
+                                                    const seatId = seat.dataset.id.trim(); // Ensure to trim any extra spaces
+                                                    if (data.available_seats.includes(parseInt(seatId))) {
+                                                        seat.classList.remove('available');
+                                                        seat.classList.add('unavailable', 'booked');
+                                                        seat.setAttribute('disabled', 'disabled'); // Disable the seat
+                                                    }
+                                                });
 
-                            // Update booking summary details
-                            document.querySelector("#sch_inp").value = data.sch_id;
-                            document.querySelector("#fare_inp").value = data.fare;
-                            document.querySelector('.fare .highlight').textContent = `₱ ${data.fare} `;
-                            document.querySelector('#departure_time').textContent = `${data.departure_date} ${data.departure_time} `;
-                            document.querySelector('#sub_total').textContent = `₱ ${data.fare * <%= passengerCount %>} `;
-                            document.querySelector('.total .highlight').textContent = `₱ ${ data.fare * <%=passengerCount %>}`; // Assuming passengerCount is defined
-                         
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                        });
-                }
+                                                // Update booking summary details
+                                                document.querySelector("#sch_inp").value = data.sch_id;
+
+                                                document.querySelector('#departure_time').textContent = `${data.departure_date} ${data.departure_time} `;
+                                                // Assuming passengerCount is defined
+
+                                            })
+                                            .catch((error) => {
+                                                console.error('Error:', error);
+                                            });
+                                    }
 
 
 
-            </script>
+                                </script>
     </main>
 </body>
 

@@ -353,16 +353,19 @@
                                     <div class="mb-2">
                                         <label for="exampleFormControlInput2" class="form-label fw-bold">Origin</label>
 
-                                        <input type="text" class="form-control" id="autocompleteInput" name="origin"
-                                            placeholder="Search..." required>
-                                        <div id="autocompleteList" class="list-group"></div>
+                                        <input type="text" class="form-control dropdown-toggle" id="autocompleteInput"
+                                            name="origin" placeholder="Search..." data-bs-toggle="dropdown"
+                                            aria-expanded="false" required>
+                                        <ul id="autocompleteList" class="dropdown-menu"
+                                            style="max-height: 200px; overflow-y: auto;"
+                                            aria-labelledby="autocompleteInput"></ul>
 
                                     </div>
                                     <div class="mb-2">
                                         <label for="exampleFormControlInput3"
                                             class="form-label fw-bold">Destination</label>
                                         <input type="text" readonly class="form-control" id="destination"
-                                            name="destination" disabled value="<%=available_schedule[0].start_point %>"
+                                            name="destination" disabled value="<%=available_schedule[0].end_point %>"
                                             required>
                                     </div>
                                     <div class="mb-2">
@@ -483,7 +486,7 @@
                             fareInput.value = ''; // Clear fare field initially
 
                             if (!input) {
-                                autocompleteList.style.display = 'none';
+                                autocompleteList.classList.remove('show');
                                 return;
                             }
 
@@ -495,19 +498,22 @@
                             }
 
                             suggestions.forEach((filteredName, index) => {
-                                let listItem = document.createElement('div');
-                                listItem.classList.add('list-group-item', 'list-group-item-action');
+                                let listItem = document.createElement('li');
+                                listItem.classList.add('dropdown-item');
                                 listItem.textContent = filteredName;
                                 listItem.onclick = function () {
                                     document.getElementById('autocompleteInput').value = filteredName;
                                     fareInput.value = fares[origins.indexOf(filteredName)]; // Correctly assign fare based on selected origin
-                                    autocompleteList.innerHTML = '';
-                                    autocompleteList.style.display = 'none';
+                                    autocompleteList.classList.remove('show');
                                 };
                                 autocompleteList.appendChild(listItem);
                             });
 
-                            autocompleteList.style.display = 'block';
+                            if (suggestions.length > 0) {
+                                autocompleteList.classList.add('show');
+                            } else {
+                                autocompleteList.classList.remove('show');
+                            }
                         });
                     </script>
                     <script>
