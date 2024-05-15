@@ -1,0 +1,239 @@
+<%-include ("../Includes/Admin/head.ejs")%>
+
+    <body>
+        <script src="/assets/static/js/initTheme.js"></script>
+        <div id="app">
+            <%-include ("../Includes/Admin/header.ejs")%>
+                <div id="main" class='layout-navbar navbar-fixed'>
+                    <%-include ("../Includes/Admin/header_top.ejs")%>
+                        <div id="main-content">
+
+                            <div class="page-heading">
+                                <div class="page-title">
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 order-md-1 order-last">
+                                            <h3>Announcement</h3>
+                                            <p class="text-subtitle text-muted">Check all active announcement.
+                                            </p>
+                                        </div>
+                                        <div class="col-12 col-md-6 order-md-2 order-first">
+                                            <nav aria-label="breadcrumb"
+                                                class="breadcrumb-header float-start float-lg-end">
+                                                <ol class="breadcrumb">
+                                                    <li class="breadcrumb-item"><a href="/admin/">Dashboard</a></li>
+
+                                                    <li class="breadcrumb-item active" aria-current="page">Announcement
+                                                    </li>
+                                                </ol>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                                <section class="section">
+
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="mb-2 row justify-content-end">
+                                                <div class="col-auto">
+                                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                        data-bs-target="#exampleModal">
+                                                        <i class="bi bi-plus-circle"></i> Add Announcement
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="table-responsive-md">
+                                                <table class="table table-bordered" id="announceTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">#</th>
+                                                            <th scope="col">Date</th>
+                                                            <th scope="col">Image</th>
+                                                            <th scope="col">Title</th>
+                                                            <th scope="col">Message</th>
+                                                            <th scope="col">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% announcement.forEach((item, index)=> { %>
+                                                            <tr>
+                                                                <td>
+                                                                    <%= index + 1 %>
+                                                                </td>
+
+                                                                <td>
+                                                                    <%= new Intl.DateTimeFormat('en-US', {month: 'short'
+                                                                        , day: '2-digit' , year: 'numeric' }).format(new
+                                                                        Date(item.dateAdded)) %>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <img src="/images/announceImages/<%= item.image%>"
+                                                                        alt="" width="200">
+
+                                                                </td>
+                                                                <td>
+                                                                    <%= item.title %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= item.message %>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <button class="btn btn-danger btn-sm"
+                                                                        onclick="deleteAnnouncement('<%=item.announcement_id%>')"><i
+                                                                            class="bi bi-x-circle"></i>
+                                                                        Delete</button>
+                                                                </td>
+                                                            </tr>
+                                                            <%})%>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                <!-- Modal -->
+                                <div class="modal fade" id="exampleModal" tabindex="-1"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Announcement
+                                                </h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <form action="/admin/announcement/add" method="post"
+                                                enctype="multipart/form-data" novalidate class="needs-validation">
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <div class="form-group">
+                                                            <label for="timeLabel">Upload Image</label>
+                                                            <input type="file" class="form-control" accept="image/*"
+                                                                id="announceImages" name="announceImages" required>
+                                                            <div class="invalid-feedback">
+                                                                Please provide a image.
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <div class="form-group">
+                                                            <label for="timeLabel">Title</label>
+                                                            <input type="text" class="form-control" name="title"
+                                                                required>
+                                                            <div class="invalid-feedback">
+                                                                Please provide a title.
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <div class="form-group">
+                                                            <label for="arrivalLabel">Message</label>
+                                                            <input type="text" class="form-control" name="message"
+                                                                required>
+                                                            <div class="invalid-feedback">
+                                                                Please provide a message.
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Add
+                                                        Announcement</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                </div>
+        </div>
+        <%-include ("../Includes/Admin/script.ejs")%>
+            <script src="/js/jquery.js"></script>
+            <script src="/vendor/datatables/datatables.js"></script>
+            <script src="/vendor/datatables/datatables.bootstrap.js"></script>
+
+
+            <script src="/vendor/datatables/buttons_datatables.js"></script>
+
+            <script src="/vendor/datatables/jszip_datatables.js"></script>
+            <script src="/vendor/datatables/pdfmake_datatables.js"></script>
+            <script src="/vendor/datatables/vfs_fonts_datatables.js"></script>
+            <script src="/vendor/datatables/buttons_html5_datatables.js"></script>
+            <script>
+
+                new DataTable('#announceTable', {})
+
+                function deleteAnnouncement(id) {
+                    Swal.fire({
+                        title: "Delete Announcement",
+                        text: `Are you sure you want to delete announcement? This action cannot be undone.`,
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Confirm", // Set the text for the confirmation button
+                        cancelButtonText: "Cancel",  // Set the text for the cancel button
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch("/admin/announcement/delete", {
+                                method: "DELETE",
+                                body: JSON.stringify({ id }),
+                                headers: { "Content-Type": "application/json" },
+                            })
+                                .then((res) => res.json())
+                                .then((response) => {
+                                    if (response.status === "success") {
+                                        Swal.fire(
+                                            'Success!',
+                                            `${response.message}`,
+                                            'success'
+                                        ).then(function () {
+                                            window.location.href = '/admin/announcement';
+                                        });
+                                    }
+                                    if (response.status === "error") {
+                                        Swal.fire(
+                                            'Error',
+                                            `${response.message}`,
+                                            'error'
+                                        ).then(function () {
+                                            window.location.href = '/admin/announcement';
+                                        });
+                                    }
+                                });
+                        } else if (result.isDismissed) {
+                            // User clicked the "Cancel" button or outside the dialog
+                            // You can add code for what should happen when the cancel button is clicked or the dialog is dismissed
+                        }
+                    });
+                }
+            </script>
+            <script>
+                // Example starter JavaScript for disabling form submissions if there are invalid fields
+                (() => {
+                    'use strict'
+
+                    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                    const forms = document.querySelectorAll('.needs-validation')
+
+                    // Loop over them and prevent submission
+                    Array.from(forms).forEach(form => {
+                        form.addEventListener('submit', event => {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+                })()
+            </script>
+    </body>
+
+    </html>

@@ -11,6 +11,7 @@ import indexRoutes from "./routes/indexRoutes.js";
 import conductorRoutes from "./routes/conductorRoutes.js";
 import inspectorRoutes from "./routes/inspectorRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import cron from "node-cron";
 
 import db from "./database/connect_db.js";
 
@@ -59,6 +60,40 @@ db.getConnection((err, connection) => {
 	if (err) throw err;
 	console.log("Database connected successfully");
 	connection.release();
+});
+
+// Function to update schedule statuses
+const updateScheduleStatus = () => {
+	const query = `
+	  UPDATE schedules
+	  SET status = 'Inactive'
+	  WHERE arrival_time < CURTIME() AND departure_date = CURDATE() AND status = 'Active';
+	`;
+
+	connection.query(query, (err, results) => {
+		if (err) {
+			console.error("Error updating schedules:", err);
+			return;
+		}
+		console.log("Schedules updated:", results.affectedRows);
+	});
+};
+
+// Schedule the status update to run every minute
+cron.schedule("*/15 * * * *", () => {
+	console.log("Running scheduled task to update schedule statuses");
+	updateScheduleStatus();
+});
+
+cron.schedule("0 12 * * *", () => {
+	console.log("Running a task every day at 12:00 PM");
+
+	dq.query(updateBookings, (err, results) => {
+		if (err) {
+			return console.error("error: " + err.message);
+		}
+		console.log("Updated bookings:", results.affectedRows);
+	});
 });
 
 // Use routes

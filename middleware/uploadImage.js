@@ -19,7 +19,7 @@ const uploadConfig = multer({
 	},
 }).fields([
 	{ name: "profile", maxCount: 1 },
-	{ name: "busImage", maxCount: 4 },
+	{ name: "announceImages", maxCount: 1 },
 ]);
 
 // Function to process and save the compressed image
@@ -57,11 +57,11 @@ export const resizeImages = async (req, res, next) => {
 		}
 
 		// Resize certificate of registration image to 16:9 aspect ratio
-		if (req.files["busImage"]) {
+		if (req.files["announceImages"]) {
 			await processAndSaveImage(
-				req.files["busImage"][0],
+				req.files["announceImages"][0],
 				{ width: 1280, height: 720 },
-				"busImage"
+				"announceImages"
 			);
 		}
 

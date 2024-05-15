@@ -1,6 +1,8 @@
 import { Router } from "express";
 import adminController from "../controller/adminController.js";
+import { uploadConfig } from "../middleware/uploadImage.js";
 import auth from "../middleware/authMiddleware.js";
+import { resizeImages } from "../middleware/uploadImage.js";
 const router = Router();
 
 router.get("/login", auth.forwardAuth, adminController.getLogin);
@@ -141,7 +143,6 @@ router.post(
 	adminController.postRoutesSubEdit
 );
 
-
 router.delete(
 	"/routes/subroutes/delete",
 	auth.requireAuth,
@@ -149,14 +150,20 @@ router.delete(
 	adminController.deleteRouteSub
 );
 
-
-
 router.get(
 	"/transaction-history",
 	auth.requireAuth,
 	auth.checkRole(["admin"]),
 	adminController.getTransaction
 );
+
+router.get(
+	"/transaction-history/search",
+	auth.requireAuth,
+	auth.checkRole(["admin"]),
+	adminController.getTransactionSearch
+);
+
 router.get(
 	"/bus",
 	auth.requireAuth,
@@ -178,14 +185,12 @@ router.post(
 	adminController.postBusEdit
 );
 
-
 router.delete(
 	"/bus/delete",
 	auth.requireAuth,
 	auth.checkRole(["admin"]),
 	adminController.deleteBus
 );
-
 
 router.get(
 	"/inspector",
@@ -215,7 +220,6 @@ router.delete(
 	adminController.deleteInspector
 );
 
-
 router.get(
 	"/inspector/:id",
 	auth.requireAuth,
@@ -223,14 +227,12 @@ router.get(
 	adminController.getInspectorReport
 );
 
-
 router.get(
 	"/conductor",
 	auth.requireAuth,
 	auth.checkRole(["admin"]),
 	adminController.getConductor
 );
-
 
 router.post(
 	"/conductor/add",
@@ -253,7 +255,6 @@ router.delete(
 	adminController.deleteConductor
 );
 
-
 router.get(
 	"/conductor/:id",
 	auth.requireAuth,
@@ -261,13 +262,37 @@ router.get(
 	adminController.getConductorReport
 );
 
-
 router.get(
 	"/download-ticket/:id/:user",
 	auth.requireAuth,
 	auth.checkRole(["admin"]),
 	adminController.getTicket
 );
+
+router.get(
+	"/announcement",
+	auth.requireAuth,
+	auth.checkRole(["admin"]),
+	adminController.getAnnouncement
+);
+
+router.post(
+	"/announcement/add",
+	auth.requireAuth,
+	auth.checkRole(["admin"]),
+	uploadConfig, // Apply the uploadConfig middleware here as well
+	resizeImages, // Apply the resizeImages middleware to process the uploaded images
+	adminController.postAnnouncement
+);
+
+router.delete(
+	"/announcement/delete",
+	auth.requireAuth,
+	auth.checkRole(["admin"]),
+
+	adminController.deleteAnnouncement
+);
+
 router.get(
 	"/logout",
 	auth.requireAuth,

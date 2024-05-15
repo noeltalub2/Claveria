@@ -1,0 +1,133 @@
+<%-include ("../Includes/Admin/head.ejs")%>
+
+    <body>
+        <script src="/assets/static/js/initTheme.js"></script>
+        <div id="app">
+            <%-include ("../Includes/Admin/header.ejs")%>
+                <div id="main" class='layout-navbar navbar-fixed'>
+                    <%-include ("../Includes/Admin/header_top.ejs")%>
+                        <div id="main-content">
+
+                            <div class="page-heading">
+                                <div class="page-title">
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 order-md-1 order-last">
+                                            <h3>Search Transaction History</h3>
+                                            <p class="text-subtitle text-muted">Check all search transaction history.
+                                            </p>
+                                        </div>
+                                        <div class="col-12 col-md-6 order-md-2 order-first">
+                                            <nav aria-label="breadcrumb"
+                                                class="breadcrumb-header float-start float-lg-end">
+                                                <ol class="breadcrumb">
+                                                    <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+                                                    <li class="breadcrumb-item"><a
+                                                            href="/admin/transaction-history">Transaction
+                                                            History</a></li>
+                                                    <li class="breadcrumb-item active" aria-current="page">Search
+                                                        Transaction
+                                                        History
+                                                    </li>
+                                                </ol>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                                <section class="section">
+                                  
+                                    <div class="card">
+                                      
+                                        <div class="card-body">
+                                            <h4 class="card-title mb-1">
+                                                <%=from_date%> to  <%=to_date%>
+                                            </h4>
+                                            <div class="table-responsive-md">
+                                                <table id="routeTable" class="table table-hover " style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Route ID </th>
+                                                            <th>Bus Number</th>
+                                                            <th>Departure Date</th>
+                                                            <th>Schedule</th>
+                                                            <th>Total Passenger</th>
+                                                            <th>Total Sales</th>
+
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% transactions.forEach((transaction,index)=> { %>
+                                                            <tr>
+                                                                <td>
+                                                                    <%=index + 1%>
+                                                                </td>
+                                                                <td>
+                                                                    <%= transaction.route_id %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= transaction.bus_number %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= new Intl.DateTimeFormat('en-US', {month: 'short' , day: '2-digit' ,
+                                                                    year: 'numeric' }).format(new Date(transaction.departure_date))
+                                                                    %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= transaction.schedule %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= transaction.total_passenger %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= transaction.total_sales %>
+                                                                </td>
+                                                            </tr>
+                                                            <% }) %>
+                                                    </tbody>
+
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+
+                        </div>
+                </div>
+
+        </div>
+
+        <%-include ("../Includes/Admin/script.ejs")%>
+            <script src="/js/jquery.js"></script>
+            <script src="/vendor/datatables/datatables.js"></script>
+            <script src="/vendor/datatables/datatables.bootstrap.js"></script>
+
+
+            <script src="/vendor/datatables/buttons_datatables.js"></script>
+
+            <script src="/vendor/datatables/jszip_datatables.js"></script>
+            <script src="/vendor/datatables/pdfmake_datatables.js"></script>
+            <script src="/vendor/datatables/vfs_fonts_datatables.js"></script>
+            <script src="/vendor/datatables/buttons_html5_datatables.js"></script>
+            <script>
+                new DataTable('#routeTable', {
+                    layout: {
+                        topStart: {
+                            buttons: [
+
+                                {
+                                    text: 'Download',
+                                    extend: 'excelHtml5',
+                                    autoFilter: true, title: `Transaction History (<%=from_date%> to  <%=to_date%>)`,
+                                    sheetName: 'Transaction', className: "btn btn-success btn-sm ", filename: `Transaction History (<%=from_date%> to  <%=to_date%>)`,
+                                }
+                            ]
+                        }
+                    }
+
+                });
+            </script>
+    </body>
+
+    </html>

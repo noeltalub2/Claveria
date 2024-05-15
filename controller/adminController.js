@@ -60,9 +60,45 @@ const postLogin = async (req, res) => {
 };
 
 const getDashboard = async (req, res) => {
+	const total_sales = (
+		await query(
+			"SELECT SUM(CAST(p.fare_paid AS DECIMAL(10,2))) AS total_paid FROM pickup_passenger p JOIN bookings b ON p.schedule_id = b.schedule_id WHERE b.status = 'Paid' AND b.booking_date = CURDATE();"
+		)
+	)[0].total_paid;
+
+	const total_bookings = (
+		await query(
+			"SELECT COUNT(*) AS total_bookings FROM bookings WHERE booking_date = CURDATE();"
+		)
+	)[0].total_bookings;
+
+	const total_schedule = (
+		await query(
+			"SELECT COUNT(*) AS 'count' FROM schedules WHERE departure_date = CURDATE() AND status = 'Active';"
+		)
+	)[0].count;
+
+	const total_user = (
+		await query("SELECT COUNT(*) AS 'count' FROM users;")
+	)[0].count;
+
+	const booking_schedule = await query(
+		"SELECT u.fullname, u.contact, b.booking_id,b.booking_date, b.fare_paid, b.booking_expiration, b.status,s.departure_time, s.departure_date, b.dateAdded, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id JOIN users u ON u.acc_id = b.user_id GROUP BY b.booking_id ORDER BY b.booking_id DESC;"
+	);
+
+	const booking_type = await query(
+		"SELECT booking_type, COUNT(*) AS count FROM bookings GROUP BY booking_type;"
+	);
+
 	res.render("Admin/dashboard", {
 		title: "Dashboard",
 		page: "dashboard",
+		total_sales,
+		total_bookings,
+		total_schedule,
+		total_user,
+		booking_schedule,
+		booking_type,
 	});
 };
 
@@ -612,9 +648,30 @@ const deleteRouteSub = async (req, res) => {
 };
 
 const getTransaction = async (req, res) => {
+	const route_schedule = await query(
+		"SELECT b.bus_number, CONCAT(r.start_point, ' - ', r.end_point) AS route, DATE_FORMAT(s.departure_date, '%Y-%m-%d %h:%i %p') AS date_time, u.fullname AS passenger_name, bk.booking_type, COUNT(se.seat_id) AS ticket_qty, SUM(bk.fare_paid) AS total, bk.dateAdded FROM bookings bk JOIN schedules s ON bk.schedule_id = s.schedule_id JOIN buses b ON s.bus_id = b.bus_id JOIN routes r ON s.route_id = r.route_id JOIN users u ON bk.user_id = u.acc_id JOIN seats se ON bk.booking_id = se.booking_id WHERE bk.status = 'Paid' GROUP BY bk.booking_id UNION ALL SELECT b.bus_number, CONCAT(r.start_point, ' - ', r.end_point) AS route, DATE_FORMAT(s.departure_date, '%Y-%m-%d %h:%i %p') AS date_time, pp.fullname AS passenger_name, 'Pickup' AS booking_type, 1 AS ticket_qty, pp.fare_paid AS total, pp.dateAdded FROM pickup_passenger pp JOIN schedules s ON pp.schedule_id = s.schedule_id JOIN buses b ON s.bus_id = b.bus_id JOIN routes r ON s.route_id = r.route_id JOIN conductors c ON pp.conductor_id = c.cnd_id WHERE pp.status = 'Paid' ORDER BY dateAdded DESC;"
+	);
+
 	res.render("Admin/transaction", {
 		title: "Transaction History",
 		page: "transaction",
+		route_schedule,
+	});
+};
+
+const getTransactionSearch = async (req, res) => {
+	const { from_date, to_date } = req.query;
+	const transactions = await query(
+		"SELECT s.route_id, b.bus_number, s.departure_date, CONCAT(r.start_point, ' to ', r.end_point, ' ', TIME_FORMAT(s.departure_time, '%h:%i %p')) AS 'schedule', (COUNT(se.seat_id) + IFNULL(SUM(pp.added_passenger), 0)) AS 'total_passenger', (SUM(bk.fare_paid) + IFNULL(SUM(pp.fare_paid), 0)) AS 'total_sales' FROM schedules s JOIN routes r ON s.route_id = r.route_id JOIN buses b ON s.bus_id = b.bus_id LEFT JOIN bookings bk ON s.schedule_id = bk.schedule_id AND bk.status = 'Paid' LEFT JOIN seats se ON bk.booking_id = se.booking_id LEFT JOIN (SELECT schedule_id, SUM(CAST(fare_paid AS DECIMAL(10,2))) AS fare_paid, COUNT(*) AS added_passenger FROM pickup_passenger WHERE status = 'Paid' GROUP BY schedule_id) pp ON s.schedule_id = pp.schedule_id WHERE s.departure_date BETWEEN ? AND ? GROUP BY s.schedule_id ORDER BY s.departure_date DESC, s.departure_time DESC;",
+		[from_date, to_date]
+	);
+
+	res.render("Admin/transaction_search", {
+		title: "Transaction Search",
+		page: "transaction",
+		transactions,
+		from_date,
+		to_date,
 	});
 };
 
@@ -1006,6 +1063,72 @@ const getConductorReport = async (req, res) => {
 	});
 };
 
+const getAnnouncement = async (req, res) => {
+	const announcement = await query(
+		"SELECT * FROM announcement ORDER BY announcement_id DESC"
+	);
+
+	res.render("Admin/announcement", {
+		title: "Announcement",
+		page: "announcement",
+		announcement,
+	});
+};
+
+const postAnnouncement = (req, res) => {
+
+	const announceImages = req.files.announceImages[0].filename
+	
+	const { title, message } = req.body;
+
+	const data = {
+		image: announceImages,
+		title,
+		message,
+	};
+
+	db.query("INSERT INTO announcement SET ?", data, (err, result) => {
+		if (err) {
+			console.log(err);
+			req.flash("error", "Error inserting announcement");
+			res.redirect("/admin/announcement");
+		} else {
+			req.flash("success_msg", "Successfully added announcement");
+			res.redirect("/admin/announcement");
+		}
+	});
+};
+
+const deleteAnnouncement = (req, res) => {
+	const announcementId = req.body.id;
+
+	db.query(
+		"DELETE FROM announcement WHERE announcement_id = ?",
+		announcementId,
+		(err, result) => {
+			if (err) {
+				console.log(err);
+				return res.status(500).json({
+					status: "error",
+					message: "Error deleting announcement",
+				});
+			}
+
+			if (result.affectedRows === 0) {
+				return res.status(404).json({
+					status: "error",
+					message: "Announcement not found",
+				});
+			}
+
+			return res.status(200).json({
+				status: "success",
+				message: "Announcement deleted successfully",
+			});
+		}
+	);
+};
+
 const getLogout = (req, res) => {
 	res.clearCookie("token");
 	res.redirect("/");
@@ -1040,6 +1163,7 @@ export default {
 	deleteRouteSub,
 
 	getTransaction,
+	getTransactionSearch,
 
 	getBus,
 	postBusAdd,
@@ -1057,6 +1181,10 @@ export default {
 	postConductorEdit,
 	deleteConductor,
 	getConductorReport,
+
+	getAnnouncement,
+	postAnnouncement,
+	deleteAnnouncement,
 
 	getTicket,
 	getLogout,
