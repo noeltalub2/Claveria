@@ -42,17 +42,24 @@
                                             <form action="/admin//booking/route/schedule/edit/" method="post">
                                                 <div class="row">
                                                     <div class="col-lg-6">
-                                                        <div class="mb-3">
-                                                            <label for="busNumber" class="form-label">Bus Number</label>
-                                                            <input type="text" class="form-control" id="busNumber"
-                                                                readonly value="<%=booking_details.bus_number%>"
-                                                                disabled>
-                                                        </div>
+                                                      
                                                         <div class="mb-3">
                                                             <label for="passengerName" class="form-label">Passenger
                                                                 Name</label>
                                                             <input type="text" class="form-control" id="passengerName"
                                                                 value="<%=booking_details.fullname%>" readonly disabled>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="idNumber" class="form-label">ID Number</label>
+                                                            <input type="text" class="form-control" id="idNumber"
+                                                                readonly value="<%=booking_details.id_number%>"
+                                                                disabled>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="busNumber" class="form-label">Bus Number</label>
+                                                            <input type="text" class="form-control" id="busNumber"
+                                                                readonly value="<%=booking_details.bus_number%>"
+                                                                disabled>
                                                         </div>
                                                         <div class="mb-3">
                                                             <label for="seatNumber" class="form-label">Seat

@@ -80,6 +80,18 @@ router.post(
 	auth.checkRole(["admin"]),
 	adminController.postRouteScheduleAdd
 );
+router.post(
+	"/route-schedule/edit",
+	auth.requireAuth,
+	auth.checkRole(["admin"]),
+	adminController.postRouteScheduleEdit
+);
+router.delete(
+	"/route-schedule/delete",
+	auth.requireAuth,
+	auth.checkRole(["admin"]),
+	adminController.deleteRouteSchedule
+);
 
 router.get(
 	"/route-schedule/walkin/:id",

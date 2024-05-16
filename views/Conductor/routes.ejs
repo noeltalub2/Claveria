@@ -192,7 +192,7 @@
                                                     <%= booking.bus_number%>
                                                 </span>
                                                 <span class="badge rounded-pill  fs-6"
-                                                    style="background-color: #388da8bf;">Boarding Time:
+                                                    style="background-color: #388da8bf;">
                                                     <%= new Intl.DateTimeFormat('en-US', {month: 'short' ,
                                                         day: '2-digit' , year: 'numeric'
                                                         }).format(booking.departure_date) %> - <%= new
@@ -313,7 +313,7 @@
                                                     <%= item.fullname %>
                                                 </td>
                                                 <td>
-                                                    <%= item.fare_paid ? '₱' + item.fare_paid : 'Not available' %>
+                                                    <%= item.fare_paid ? '₱ ' + item.fare_paid : 'Not available' %>
                                                 </td>
                                             </tr>
                                             <% }); %>
@@ -348,30 +348,24 @@
                                     <div class="mb-2">
                                         <label for="exampleFormControlInput1" class="form-label fw-bold">Passenger
                                             Name</label>
-                                        <input type="text" class="form-control" id="fullname" required name="fullname">
+                                        <input type="text" class="form-control" id="fullname" placeholder="(Optional)" name="fullname">
                                     </div>
                                     <div class="mb-2">
                                         <label for="exampleFormControlInput2" class="form-label fw-bold">Origin</label>
 
-                                        <input type="text" class="form-control dropdown-toggle" id="autocompleteInput"
-                                            name="origin" placeholder="Search..." data-bs-toggle="dropdown"
-                                            aria-expanded="false" required>
-                                        <ul id="autocompleteList" class="dropdown-menu"
-                                            style="max-height: 200px; overflow-y: auto;"
-                                            aria-labelledby="autocompleteInput"></ul>
+                                        <input type="text" class="form-control" id="origin" name="origin" required>
+
 
                                     </div>
                                     <div class="mb-2">
                                         <label for="exampleFormControlInput3"
                                             class="form-label fw-bold">Destination</label>
-                                        <input type="text" readonly class="form-control" id="destination"
-                                            name="destination" disabled value="<%=available_schedule[0].end_point %>"
+                                        <input type="text" class="form-control" id="destination" name="destination"
                                             required>
                                     </div>
                                     <div class="mb-2">
                                         <label for="exampleFormControlInput4" class="form-label fw-bold">Fare</label>
-                                        <input type="text" readonly class="form-control" id="fare" disabled name="fare"
-                                            placeholder="₱: 0.00">
+                                        <input type="number" class="form-control" id="fare" name="fare">
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -413,7 +407,7 @@
 
                                 const schedule_id = document.getElementById("schedule_id").value
                                 const fullname = document.getElementById("fullname").value
-                                const origin = document.getElementById("autocompleteInput").value
+                                const origin = document.getElementById("origin").value
                                 const destination = document.getElementById("destination").value
                                 const fare = document.getElementById("fare").value
 
@@ -474,47 +468,7 @@
                                 }
                             });
                         })
-                        const routes = <%- JSON.stringify(sub_routes) %>;
-                        const origins = routes.map(route => route.origin);
-                        const fares = routes.map(route => route.fare);
 
-                        document.getElementById('autocompleteInput').addEventListener('input', function () {
-                            let input = this.value;
-                            let autocompleteList = document.getElementById('autocompleteList');
-                            let fareInput = document.getElementById('fare');
-                            autocompleteList.innerHTML = ''; // Clear previous autocomplete suggestions
-                            fareInput.value = ''; // Clear fare field initially
-
-                            if (!input) {
-                                autocompleteList.classList.remove('show');
-                                return;
-                            }
-
-                            // Filter suggestions based on input
-                            let suggestions = origins.filter(item => item.toLowerCase().startsWith(input.toLowerCase()));
-
-                            if (suggestions.length === 0) {
-                                fareInput.value = ''; // Clear fare if no suggestions match
-                            }
-
-                            suggestions.forEach((filteredName, index) => {
-                                let listItem = document.createElement('li');
-                                listItem.classList.add('dropdown-item');
-                                listItem.textContent = filteredName;
-                                listItem.onclick = function () {
-                                    document.getElementById('autocompleteInput').value = filteredName;
-                                    fareInput.value = fares[origins.indexOf(filteredName)]; // Correctly assign fare based on selected origin
-                                    autocompleteList.classList.remove('show');
-                                };
-                                autocompleteList.appendChild(listItem);
-                            });
-
-                            if (suggestions.length > 0) {
-                                autocompleteList.classList.add('show');
-                            } else {
-                                autocompleteList.classList.remove('show');
-                            }
-                        });
                     </script>
                     <script>
                         new DataTable('#historyTable', {

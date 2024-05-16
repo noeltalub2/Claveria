@@ -67,7 +67,7 @@ const updateScheduleStatus = () => {
 	const query = `
 	  UPDATE schedules
 	  SET status = 'Inactive'
-	  WHERE arrival_time < CURTIME() AND departure_date = CURDATE() AND status = 'Active';
+	  WHERE arrival_time < CURTIME() AND departure_date <= CURDATE() AND status = 'Active';
 	`;
 
 	connection.query(query, (err, results) => {

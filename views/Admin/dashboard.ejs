@@ -125,7 +125,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    
+
                                         <div class="row">
                                             <div class="col-8">
                                                 <div class="card">
@@ -233,8 +233,8 @@
 
                 document.addEventListener("DOMContentLoaded", () => {
                     var optionsVisitorsProfile = {
-                        series: [<%=booking_type[0].count %>, <%=booking_type[1].count %>],
-                        labels: ['<%=booking_type[0].booking_type%>', '<%=booking_type[1].booking_type%>'],
+                        series: [<%=booking_type[0]?.count %>, <%=booking_type[1]?.count %>],
+                        labels: ['<%=booking_type[0]?.booking_type%>', '<%=booking_type[1]?.booking_type%>'],
                         colors: ["#435ebe", "#55c6e8"],
                         chart: {
                             type: "donut",

@@ -46,7 +46,7 @@
                                                             <th>#</th>
                                                             <th>Bus Number</th>
                                                             <th>Route</th>
-                                                            <th>Date & Time</th>
+                                                            <th>Date</th>
                                                             <th>Passenger Name</th>
                                                             <th>Booking Type</th>
                                                             <th>Tickey Qty.</th>
@@ -67,7 +67,9 @@
                                                                     <%=route.route%>
                                                                 </td>
                                                                 <td>
-                                                                    <%=route.date_time%>
+                                                                    <%= new Intl.DateTimeFormat('en-US', {month: 'short' , day: '2-digit' ,
+                                                                    year: 'numeric' }).format(new Date(route.departure_date))
+                                                                    %>
                                                                 </td>
                                                                 <td>
                                                                     <%=route.passenger_name%>

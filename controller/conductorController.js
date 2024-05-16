@@ -59,17 +59,14 @@ const postLogin = async (req, res) => {
 };
 
 const getRoutes = async (req, res) => {
-	const date = new Date(new Date().setDate(new Date().getDate()))
-		.toISOString()
-		.slice(0, 10);
-
+	
 	const available_schedule = await query(
-		"SELECT COUNT(pp.psg_id) AS passenger_count, b.bus_number, sch.schedule_id, sch.route_id, sch.bus_id, sch.departure_time, sch.arrival_time, sch.departure_date, rt.fare, rt.start_point, rt.end_point, rt.route_id FROM schedules sch JOIN routes rt ON sch.route_id = rt.route_id JOIN buses b ON sch.bus_id = b.bus_id JOIN conductors c ON c.cnd_id = sch.conductor_id LEFT JOIN pickup_passenger pp ON pp.schedule_id = sch.schedule_id WHERE sch.departure_date = ? AND sch.status = 'Active' AND sch.conductor_id = ? GROUP BY sch.schedule_id, sch.route_id, sch.bus_id, sch.departure_time, sch.arrival_time, sch.departure_date, rt.fare, rt.start_point, rt.end_point, b.bus_number;",
-		[date, res.locals.user.id]
+		"SELECT COUNT(pp.psg_id) AS passenger_count, b.bus_number, sch.schedule_id, sch.route_id, sch.bus_id,  DATE_FORMAT(sch.departure_time, '%r') AS departure_time, DATE_FORMAT(sch.arrival_time, '%r') AS arrival_time, sch.departure_date, rt.fare, rt.start_point, rt.end_point, rt.route_id FROM schedules sch JOIN routes rt ON sch.route_id = rt.route_id JOIN buses b ON sch.bus_id = b.bus_id JOIN conductors c ON c.cnd_id = sch.conductor_id LEFT JOIN pickup_passenger pp ON pp.schedule_id = sch.schedule_id WHERE sch.departure_date = CURDATE() AND sch.status = 'Active' AND sch.conductor_id = ? GROUP BY sch.schedule_id, sch.route_id, sch.bus_id, sch.departure_time, sch.arrival_time, sch.departure_date, rt.fare, rt.start_point, rt.end_point, b.bus_number;",
+		[res.locals.user.id]
 	);
 
 	const history = await query(
-		"SELECT b.bus_number, pp.origin, sch.departure_time, sch.arrival_time, sch.departure_date, pp.fare_paid, rt.start_point, rt.end_point, pp.fullname FROM pickup_passenger pp INNER JOIN schedules sch ON pp.schedule_id = sch.schedule_id JOIN routes rt ON sch.route_id = rt.route_id JOIN buses b ON sch.bus_id = b.bus_id WHERE pp.conductor_id = ? ORDER BY pp.psg_id DESC",
+		"SELECT b.bus_number, pp.origin, DATE_FORMAT(sch.departure_time, '%r') AS departure_time, DATE_FORMAT(sch.arrival_time, '%r') AS arrival_time, sch.departure_date, pp.fare_paid, rt.start_point, rt.end_point, pp.fullname FROM pickup_passenger pp INNER JOIN schedules sch ON pp.schedule_id = sch.schedule_id JOIN routes rt ON sch.route_id = rt.route_id JOIN buses b ON sch.bus_id = b.bus_id WHERE pp.conductor_id = ? ORDER BY pp.psg_id DESC",
 		[res.locals.user.id]
 	);
 
@@ -82,7 +79,7 @@ const getRoutes = async (req, res) => {
 	} else {
 		sub_routes = [];
 	}
-	console.log(sub_routes)
+	
 	res.render("Conductor/routes", {
 		available_schedule,
 		sub_routes,
@@ -91,8 +88,13 @@ const getRoutes = async (req, res) => {
 };
 
 const postAddPassenger = async (req, res) => {
-	const { fullname, origin, destination, fare, schedule_id } = req.body;
+	const { origin, destination, fare, schedule_id } = req.body;
 
+	let fullname = req.body.fullname
+	
+	if (!fullname) {
+		fullname = "PICK UP"
+	}
 	try {
 		const query =
 			"INSERT INTO pickup_passenger (fullname, origin, destination, fare_paid, schedule_id, conductor_id) VALUES (?, ?, ?, ?, ?,?)";

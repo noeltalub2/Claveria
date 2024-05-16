@@ -46,7 +46,7 @@
                                                             <th>#</th>
                                                             <th>Bus Number</th>
                                                             <th>Capacity</th>
-                                                            <th>Bus Type</th>
+                                                       
                                                             <th>Status</th>
                                                             <th class="text-center">Action</th>
                                                         </tr>
@@ -63,9 +63,7 @@
                                                                 <td>
                                                                     <%=bus.capacity%>
                                                                 </td>
-                                                                <td>
-                                                                    <%=bus.bus_type%>
-                                                                </td>
+                                                               
                                                                 <td>
                                                                     <span class="badge <%= 
                                                             bus.bus_status === 'Inactive' ? 'bg-danger' : 
@@ -81,7 +79,7 @@
 
                                                                     <button type="button"
                                                                         class="btn btn-primary btn-sm me-1 mb-1"
-                                                                        onclick="editbus('<%=bus.bus_id%>','<%=bus.bus_number%>','<%=bus.capacity%>','<%=bus.bus_type%>','<%=bus.bus_status%>')"
+                                                                        onclick="editbus('<%=bus.bus_id%>','<%=bus.bus_number%>','<%=bus.capacity%>','<%=bus.bus_status%>')"
                                                                         data-bs-toggle="modal"
                                                                         data-bs-target="#editbus">
                                                                         <i class="bi bi-pencil"></i> Edit
@@ -135,16 +133,7 @@
                                                     </div>
 
                                                 </div>
-                                                <div class="mb-3">
-                                                    <div class="form-group">
-                                                        <label for="busTypeLabel">Bus Type</label>
-                                                        <select class="form-control" name="bus_type" id="busTypeLabel"
-                                                            required>
-                                                            <option value="Aircon">Aircon</option>
-                                                            <option value="Regular">Regular</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
+                                         
                                                 <div class="mb-3">
                                                     <div class="form-group">
                                                         <label for="statusLabel">Status</label>
@@ -171,7 +160,7 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="exampleModalLabel232">Add Bus</h1>
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel232">Edit Bus</h1>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -193,15 +182,7 @@
                                                     </div>
 
                                                 </div>
-                                                <div class="mb-3">
-                                                    <div class="form-group">
-                                                        <label for="edit_bus_type">Bus Type</label>
-                                                        <select class="form-control" name="bus_type" id="edit_bus_type" required>
-                                                            <option value="Aircon">Aircon</option>
-                                                            <option value="Regular">Regular</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
+                                            
                                                 <div class="mb-3">
                                                     <div class="form-group">
                                                         <label for="edit_bus_status">Status</label>
@@ -248,11 +229,10 @@
             </script>
 
             <script>
-                function editbus(id, bus_number, capacity, bus_type, bus_status) {
+                function editbus(id, bus_number, capacity, bus_status) {
                     document.getElementById("edit_bus_id").value = id
                     document.getElementById("edit_bus_number").value = bus_number
                     document.getElementById("edit_capacity").value = capacity
-                    document.getElementById("edit_bus_type").value = bus_type
                     document.getElementById("edit_bus_status").value = bus_status
 
                 }

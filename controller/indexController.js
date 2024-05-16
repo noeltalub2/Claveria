@@ -10,8 +10,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const getIndex = async (req, res) => {
+	const announcements = await query("SELECT * FROM announcement")
 	const routes = await query("SELECT * FROM routes");
-	res.render("Home/index", { routes });
+	res.render("Home/index", { routes,announcements });
 };
 
 const getLogin = (req, res) => {
@@ -121,13 +122,13 @@ const getBooking = async (req, res) => {
 	const route = req.query.destination;
 	const departure = req.query.departure;
 	const passengerCount = req.query.passengerCount;
-
+	const routes = await query("SELECT * FROM routes");
 	const route_details = (
 		await query("SELECT * FROM routes WHERE route_id = ?", [route])
 	)[0];
 
 	const available_schedule = await query(
-		"SELECT sch.schedule_id, sch.route_id, sch.bus_id, sch.departure_time, sch.arrival_time, sch.departure_date, rt.fare, rt.start_point, rt.end_point, b.bus_number, b.bus_type, (b.capacity - IFNULL(bc.booked_count, 0)) AS available_seats FROM schedules sch JOIN routes rt ON sch.route_id = rt.route_id JOIN buses b ON sch.bus_id = b.bus_id LEFT JOIN (SELECT bk.schedule_id, COUNT(*) AS booked_count FROM bookings bk JOIN seats s ON bk.booking_id = s.booking_id WHERE bk.status IN ('Pending','Paid') GROUP BY bk.schedule_id) bc ON sch.schedule_id = bc.schedule_id WHERE sch.route_id = ? AND sch.departure_date = ? AND sch.status = 'Active';",
+		"SELECT sch.schedule_id, sch.route_id, sch.bus_id,DATE_FORMAT(sch.departure_time, '%r') AS departure_time, DATE_FORMAT(sch.arrival_time, '%r') AS arrival_time, sch.departure_date, rt.fare, rt.start_point, rt.end_point, b.bus_number, (b.capacity - IFNULL(bc.booked_count, 0)) AS available_seats FROM schedules sch JOIN routes rt ON sch.route_id = rt.route_id JOIN buses b ON sch.bus_id = b.bus_id LEFT JOIN (SELECT bk.schedule_id, COUNT(*) AS booked_count FROM bookings bk JOIN seats s ON bk.booking_id = s.booking_id WHERE bk.status IN ('Pending','Paid') GROUP BY bk.schedule_id) bc ON sch.schedule_id = bc.schedule_id WHERE sch.route_id = ? AND sch.departure_date = ? AND sch.status = 'Active';",
 		[route, departure]
 	);
 	const sub_routes = await query(
@@ -139,7 +140,8 @@ const getBooking = async (req, res) => {
 		available_schedule,
 		route_details,
 		departure,
-		route,
+		routeId: route,
+		routes,
 		passengerCount,
 		sub_routes,
 	});
@@ -152,7 +154,7 @@ const getBookingDetails = async (req, res) => {
 		);
 
 		const scheduleDetails = await query(
-			"SELECT r.fare, r.end_point as destination, s.departure_time, s.departure_date FROM routes r JOIN schedules s ON r.route_id = s.route_id WHERE s.schedule_id = ?;",
+			"SELECT r.fare, r.end_point as destination, DATE_FORMAT(s.departure_time, '%r') AS departure_time, s.departure_date FROM routes r JOIN schedules s ON r.route_id = s.route_id WHERE s.schedule_id = ?;",
 			[req.body.sch_id]
 		);
 
@@ -193,6 +195,7 @@ const postBookingDetails = async (req, res) => {
 		const fare_paid = req.body.fare_inp;
 		const seats = req.body.selectedSeatIds;
 		const drop_off = req.body.drop_off;
+		const id_number = req.body.id_number
 		let booking = {
 			user_id: res.locals.user.id,
 			schedule_id,
@@ -200,6 +203,7 @@ const postBookingDetails = async (req, res) => {
 			status: "Pending",
 			booking_type: "Online",
 			drop_off: drop_off,
+			id_number: id_number,
 			booking_date: new Date().toISOString().slice(0, 10),
 			booking_expiration: new Date(
 				new Date().setDate(new Date().getDate() + 1)
@@ -241,12 +245,12 @@ const getAccount = async (req, res) => {
 	)[0];
 
 	const active_bookings = await query(
-		"SELECT b.drop_off,b.booking_id, b.fare_paid, b.booking_expiration, b.status, r.fare, r.end_point as destination, r.start_point as origin, s.departure_time, s.departure_date, b.dateAdded, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id WHERE b.status IN ('Pending', 'Paid') AND b.user_id = ? AND s.departure_date >= CURDATE() GROUP BY b.booking_id ORDER BY b.dateAdded DESC;",
+		"SELECT b.drop_off,b.booking_id, b.fare_paid, b.booking_expiration, b.status, r.fare, r.end_point as destination, r.start_point as origin, DATE_FORMAT(s.departure_time, '%r') AS departure_time, s.departure_date, b.dateAdded, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id WHERE b.status IN ('Pending', 'Paid') AND b.user_id = ? AND s.departure_date >= CURDATE() GROUP BY b.booking_id ORDER BY b.dateAdded DESC;",
 		[res.locals.user.id]
 	);
 
 	const history_bookings = await query(
-		"SELECT b.drop_off,b.booking_id, b.fare_paid, b.booking_expiration, b.status, r.fare, r.end_point as destination, r.start_point as origin, s.departure_time, s.departure_date, b.dateAdded, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id WHERE (b.status = 'Cancelled' OR (b.status = 'Paid' AND s.departure_date < CURDATE())) AND b.user_id = ? GROUP BY b.booking_id ORDER BY b.dateModified DESC;",
+		"SELECT b.drop_off,b.booking_id, b.fare_paid, b.booking_expiration, b.status, r.fare, r.end_point as destination, r.start_point as origin, DATE_FORMAT(s.departure_time, '%r') AS departure_time, s.departure_date, b.dateAdded, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id WHERE (b.status = 'Cancelled' OR (b.status = 'Paid' AND s.departure_date < CURDATE())) AND b.user_id = ? GROUP BY b.booking_id ORDER BY b.dateModified DESC;",
 		[res.locals.user.id]
 	);
 
@@ -258,7 +262,7 @@ const getUserBookingDetails = async (req, res) => {
 
 	const booking_details = (
 		await query(
-			"SELECT COUNT(*) AS 'count', b.status, b.drop_off, b.booking_id, b.user_id, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers, b.fare_paid, r.end_point, r.start_point, s.departure_time, r.fare, s.departure_date FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id WHERE b.booking_id = ? AND b.user_id = ? AND b.status IN ('Pending', 'Paid') GROUP BY b.booking_id;",
+			"SELECT COUNT(*) AS 'count', b.status, b.drop_off,b.id_number, b.booking_id, b.user_id, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers, b.fare_paid, r.end_point, r.start_point, DATE_FORMAT(s.departure_time, '%r') AS departure_time, r.fare, s.departure_date FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id WHERE b.booking_id = ? AND b.user_id = ? AND b.status IN ('Pending', 'Paid') GROUP BY b.booking_id;",
 			[booking_id, res.locals.user.id]
 		)
 	)[0];
@@ -377,7 +381,7 @@ const getTicket = async (req, res) => {
 
 	// Horizontal Line to separate header
 	doc.moveTo(50, 120).lineTo(550, 120).stroke();
-	doc.fontSize(14).text(`Booking ID: ${details.booking_id}`, 70, 130);
+	doc.fontSize(14).text(`OR Number: ${details.booking_id}`, 70, 130);
 	// Ticket Details
 	doc.fontSize(12)
 		.text(

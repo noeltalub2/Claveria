@@ -65,7 +65,7 @@
           <li><a href="#about">About</a></li>
           <li><a href="#contact">Contact Us</a></li>
 
-       <%if (['guess', 'inspector', 'conductor', 'admin'].includes(user.role)) {%>
+          <%if (['guess', 'inspector' , 'conductor' , 'admin' ].includes(user.role)) {%>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -120,9 +120,11 @@
                     <select class="form-select" id="floatingSelect1" aria-label="Floating label select example"
                       name="destination" required>
                       <option selected disabled value="">Travel Location</option>
-                      <%routes.forEach((route) => {%>
-                        <option value="<%=route.route_id%>"><%=route.start_point%> - <%=route.end_point%></option>
-                      <%})%>
+                      <%routes.forEach((route)=> {%>
+                        <option value="<%=route.route_id%>">
+                          <%=route.start_point%> - <%=route.end_point%>
+                        </option>
+                        <%})%>
                     </select>
                     <label for="floatingSelect1">Routes</label>
                   </div>
@@ -251,6 +253,36 @@
             </div>
           </div>
         </div>
+      </div>
+
+    </section>
+    <section id="announcement" class="announcement section">
+
+      <!-- Section Title -->
+      <div class="container section-title aos-init aos-animate" data-aos="fade-up">
+        <h2>Announcement</h2>
+        <p>Check all announcement</p>
+      </div><!-- End Section Title -->
+
+
+      <div class="container aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
+        <% announcements.forEach(function(announcement) { %>
+          <div class="col-md-4">
+            <div class="card mb-4">
+              <img class="card-img-top" src="/images/announceImages/<%= announcement.image %>" alt="Announcement Image">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <%= announcement.title %>
+                </h5>
+                <p class="card-text">
+                  <%= announcement.message %>
+                </p>
+                <p class="card-text"><small class="text-muted">Added on: <%= new Intl.DateTimeFormat('en-US', {month: 'short' , day: '2-digit' ,
+                  year: 'numeric' }).format(announcement.dateAdded ) %></small></p>
+              </div>
+            </div>
+          </div>
+          <% }); %>
       </div>
 
     </section>

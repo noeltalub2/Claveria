@@ -114,9 +114,10 @@ const getBooking = async (req, res) => {
 const getBookingRoute = async (req, res) => {
 	const id = req.params.id;
 	const routes_schedule = await query(
-		"SELECT routes.start_point, routes.end_point, schedules.departure_time,schedules.schedule_id, schedules.arrival_time, schedules.departure_date FROM schedules JOIN routes ON schedules.route_id = routes.route_id WHERE schedules.status = 'Active' AND routes.route_id = ? ORDER BY `schedules`.`departure_time` ASC;",
+		"SELECT routes.start_point, routes.end_point, schedules.departure_time, schedules.schedule_id, schedules.arrival_time, schedules.departure_date FROM schedules JOIN routes ON schedules.route_id = routes.route_id WHERE schedules.status = 'Active' AND routes.route_id = ? AND schedules.departure_date = CURDATE() ORDER BY `schedules`.`departure_time` ASC;",
 		[id]
 	);
+
 	res.render("Admin/booking_route", {
 		title: "Booking Route",
 		page: "booking",
@@ -151,7 +152,7 @@ const getUserBookingDetails = async (req, res) => {
 
 	const booking_details = (
 		await query(
-			"SELECT COUNT(*) AS 'count', bs.bus_number, s.bus_id, b.drop_off, r.route_id, s.schedule_id, u.fullname, b.status, b.booking_id, b.user_id, b.discount_id, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers, b.fare_paid, r.end_point, r.start_point, s.departure_time, r.fare, s.departure_date FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id JOIN users u ON u.acc_id = b.user_id INNER JOIN buses bs ON bs.bus_id = s.bus_id WHERE b.booking_id = ? GROUP BY b.booking_id;",
+			"SELECT COUNT(*) AS 'count', bs.bus_number, b.id_number, s.bus_id, b.drop_off, r.route_id, s.schedule_id, u.fullname, b.status, b.booking_id, b.user_id, b.discount_id, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers, b.fare_paid, r.end_point, r.start_point, s.departure_time, r.fare, s.departure_date FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id JOIN users u ON u.acc_id = b.user_id INNER JOIN buses bs ON bs.bus_id = s.bus_id WHERE b.booking_id = ? GROUP BY b.booking_id;",
 			[id]
 		)
 	)[0];
@@ -258,7 +259,7 @@ const downloadBooking = async (req, res) => {};
 
 const getRouteSchedule = async (req, res) => {
 	const route_schedule = await query(
-		"SELECT r.start_point, r.end_point, s.*, b.bus_number, b.bus_status FROM schedules s INNER JOIN buses b ON s.bus_id = b.bus_id JOIN routes r ON r.route_id = s.route_id ORDER BY s.schedule_id DESC"
+		"SELECT r.start_point, r.end_point, s.*, b.bus_number, b.bus_status, b.bus_id, s.schedule_id FROM schedules s INNER JOIN buses b ON s.bus_id = b.bus_id JOIN routes r ON r.route_id = s.route_id ORDER BY s.schedule_id DESC"
 	);
 
 	const buses = await query(
@@ -300,6 +301,72 @@ const postRouteScheduleAdd = async (req, res) => {
 			res.redirect("/admin/route-schedule");
 		}
 	);
+};
+
+const postRouteScheduleEdit = async (req, res) => {
+	const {
+		schedule_id,
+		departureDate,
+		route,
+		bus,
+		departureTime,
+		arrivalTime,
+		conductor,
+	} = req.body;
+	const updateSql = `
+        UPDATE schedules
+        SET route_id = ?, bus_id = ?, conductor_id = ?, departure_time = ?, arrival_time = ?, departure_date = ?
+        WHERE schedule_id = ?
+    `;
+
+	db.query(
+		updateSql,
+		[
+			route,
+			bus,
+			conductor,
+			departureTime,
+			arrivalTime,
+			departureDate,
+			schedule_id,
+		],
+		(error, results) => {
+			if (error) {
+				console.log(error);
+				req.flash(
+					"error_msg",
+					"There was an error updating the schedule"
+				);
+				return res.redirect("/admin/route-schedule");
+			}
+
+			req.flash("success_msg", "Schedule updated successfully.");
+			res.redirect("/admin/route-schedule");
+		}
+	);
+};
+
+const deleteRouteSchedule = async (req, res) => {
+	try {
+		const schedule_id = req.body.id;
+
+		await query("SET FOREIGN_KEY_CHECKS=0;");
+		await query("DELETE FROM schedules WHERE schedule_id  = ?;", [
+			schedule_id,
+		]);
+		await query("SET FOREIGN_KEY_CHECKS=1;");
+
+		res.status(200).json({
+			success: true,
+			message: "Successfully deleted schedule",
+		});
+	} catch (e) {
+		console.error(e);
+		res.status(500).json({
+			success: false,
+			error: "Internal Server Error",
+		});
+	}
 };
 
 const getRouteScheduleWalkIn = async (req, res) => {
@@ -369,7 +436,7 @@ const getTicket = async (req, res) => {
 
 	// Horizontal Line to separate header
 	doc.moveTo(50, 120).lineTo(550, 120).stroke();
-	doc.fontSize(14).text(`Booking ID: ${details.booking_id}`, 70, 130);
+	doc.fontSize(14).text(`OR NUMBER: ${details.booking_id}`, 70, 130);
 	// Ticket Details
 	doc.fontSize(12)
 		.text(
@@ -649,7 +716,7 @@ const deleteRouteSub = async (req, res) => {
 
 const getTransaction = async (req, res) => {
 	const route_schedule = await query(
-		"SELECT b.bus_number, CONCAT(r.start_point, ' - ', r.end_point) AS route, DATE_FORMAT(s.departure_date, '%Y-%m-%d %h:%i %p') AS date_time, u.fullname AS passenger_name, bk.booking_type, COUNT(se.seat_id) AS ticket_qty, SUM(bk.fare_paid) AS total, bk.dateAdded FROM bookings bk JOIN schedules s ON bk.schedule_id = s.schedule_id JOIN buses b ON s.bus_id = b.bus_id JOIN routes r ON s.route_id = r.route_id JOIN users u ON bk.user_id = u.acc_id JOIN seats se ON bk.booking_id = se.booking_id WHERE bk.status = 'Paid' GROUP BY bk.booking_id UNION ALL SELECT b.bus_number, CONCAT(r.start_point, ' - ', r.end_point) AS route, DATE_FORMAT(s.departure_date, '%Y-%m-%d %h:%i %p') AS date_time, pp.fullname AS passenger_name, 'Pickup' AS booking_type, 1 AS ticket_qty, pp.fare_paid AS total, pp.dateAdded FROM pickup_passenger pp JOIN schedules s ON pp.schedule_id = s.schedule_id JOIN buses b ON s.bus_id = b.bus_id JOIN routes r ON s.route_id = r.route_id JOIN conductors c ON pp.conductor_id = c.cnd_id WHERE pp.status = 'Paid' ORDER BY dateAdded DESC;"
+		"SELECT b.bus_number, CONCAT(r.start_point, ' - ', r.end_point) AS route, s.departure_date, u.fullname AS passenger_name, bk.booking_type, COUNT(se.seat_id) AS ticket_qty, bk.fare_paid AS total, bk.dateAdded FROM bookings bk JOIN schedules s ON bk.schedule_id = s.schedule_id JOIN buses b ON s.bus_id = b.bus_id JOIN routes r ON s.route_id = r.route_id JOIN users u ON bk.user_id = u.acc_id JOIN seats se ON bk.booking_id = se.booking_id WHERE bk.status = 'Paid' GROUP BY bk.booking_id UNION ALL SELECT b.bus_number, CONCAT(r.start_point, ' - ', r.end_point) AS route, s.departure_date, pp.fullname AS passenger_name, 'Pickup' AS booking_type, 1 AS ticket_qty, pp.fare_paid AS total, pp.dateAdded FROM pickup_passenger pp JOIN schedules s ON pp.schedule_id = s.schedule_id JOIN buses b ON s.bus_id = b.bus_id JOIN routes r ON s.route_id = r.route_id JOIN conductors c ON pp.conductor_id = c.cnd_id WHERE pp.status = 'Paid' ORDER BY dateAdded DESC;"
 	);
 
 	res.render("Admin/transaction", {
@@ -662,7 +729,7 @@ const getTransaction = async (req, res) => {
 const getTransactionSearch = async (req, res) => {
 	const { from_date, to_date } = req.query;
 	const transactions = await query(
-		"SELECT s.route_id, b.bus_number, s.departure_date, CONCAT(r.start_point, ' to ', r.end_point, ' ', TIME_FORMAT(s.departure_time, '%h:%i %p')) AS 'schedule', (COUNT(se.seat_id) + IFNULL(SUM(pp.added_passenger), 0)) AS 'total_passenger', (SUM(bk.fare_paid) + IFNULL(SUM(pp.fare_paid), 0)) AS 'total_sales' FROM schedules s JOIN routes r ON s.route_id = r.route_id JOIN buses b ON s.bus_id = b.bus_id LEFT JOIN bookings bk ON s.schedule_id = bk.schedule_id AND bk.status = 'Paid' LEFT JOIN seats se ON bk.booking_id = se.booking_id LEFT JOIN (SELECT schedule_id, SUM(CAST(fare_paid AS DECIMAL(10,2))) AS fare_paid, COUNT(*) AS added_passenger FROM pickup_passenger WHERE status = 'Paid' GROUP BY schedule_id) pp ON s.schedule_id = pp.schedule_id WHERE s.departure_date BETWEEN ? AND ? GROUP BY s.schedule_id ORDER BY s.departure_date DESC, s.departure_time DESC;",
+		"SELECT b.bus_number, s.departure_date, CONCAT(r.start_point, ' to ', r.end_point, ' ', TIME_FORMAT(s.departure_time, '%h:%i %p')) AS 'schedule', (COUNT(DISTINCT bk.booking_id) + COUNT(DISTINCT pp.psg_id)) AS 'total_passenger', (SUM(bk.fare_paid) + SUM(pp.fare_paid)) AS 'total_sales' FROM schedules s JOIN routes r ON s.route_id = r.route_id JOIN buses b ON s.bus_id = b.bus_id LEFT JOIN bookings bk ON s.schedule_id = bk.schedule_id AND bk.status = 'Paid' LEFT JOIN pickup_passenger pp ON s.schedule_id = pp.schedule_id AND pp.status = 'Paid' WHERE s.departure_date BETWEEN ? AND ? GROUP BY s.schedule_id HAVING (SUM(bk.fare_paid) + SUM(pp.fare_paid)) > 0 ORDER BY s.departure_date DESC, s.departure_time DESC;",
 		[from_date, to_date]
 	);
 
@@ -685,15 +752,15 @@ const getBus = async (req, res) => {
 };
 
 const postBusAdd = async (req, res) => {
-	const { bus_number, capacity, bus_type, bus_status } = req.body;
+	const { bus_number, capacity, bus_status } = req.body;
 	const insertSql = `
-        INSERT INTO buses (bus_number,capacity,bus_type,bus_status)
-        VALUES (?, ?,?,?)
+        INSERT INTO buses (bus_number,capacity,bus_status)
+        VALUES (?, ?,?)
     `;
 
 	db.query(
 		insertSql,
-		[bus_number, capacity, bus_type, bus_status],
+		[bus_number, capacity, bus_status],
 		(error, results) => {
 			if (error) {
 				console.log(error);
@@ -708,12 +775,12 @@ const postBusAdd = async (req, res) => {
 };
 
 const postBusEdit = async (req, res) => {
-	const { bus_id, bus_number, capacity, bus_type, bus_status } = req.body;
+	const { bus_id, bus_number, capacity, bus_status } = req.body;
 
 	const data = {
 		bus_number,
 		capacity,
-		bus_type,
+
 		bus_status,
 	};
 
@@ -1076,9 +1143,8 @@ const getAnnouncement = async (req, res) => {
 };
 
 const postAnnouncement = (req, res) => {
+	const announceImages = req.files.announceImages[0].filename;
 
-	const announceImages = req.files.announceImages[0].filename
-	
 	const { title, message } = req.body;
 
 	const data = {
@@ -1150,6 +1216,8 @@ export default {
 
 	getRouteSchedule,
 	postRouteScheduleAdd,
+	postRouteScheduleEdit,
+	deleteRouteSchedule,
 	getRouteScheduleWalkIn,
 	postRouteScheduleWalkIn,
 
