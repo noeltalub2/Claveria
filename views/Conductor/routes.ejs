@@ -351,6 +351,11 @@
                                         <input type="text" class="form-control" id="fullname" placeholder="(Optional)" name="fullname">
                                     </div>
                                     <div class="mb-2">
+                                        <label for="exampleFormControlInput13" class="form-label fw-bold">Passenger
+                                            Count</label>
+                                        <input type="number" class="form-control" id="passenger_count"  name="passenger_count" required>
+                                    </div>
+                                    <div class="mb-2">
                                         <label for="exampleFormControlInput2" class="form-label fw-bold">Origin</label>
 
                                         <input type="text" class="form-control" id="origin" name="origin" required>
@@ -410,7 +415,7 @@
                                 const origin = document.getElementById("origin").value
                                 const destination = document.getElementById("destination").value
                                 const fare = document.getElementById("fare").value
-
+                                const passenger_count = document.getElementById("passenger_count").value
                                 if (!fare) {
                                     Swal.fire({
                                         position: "top-end",
@@ -429,7 +434,7 @@
                                         fullname,
                                         origin,
                                         destination,
-                                        fare,
+                                        fare,passenger_count
                                     };
 
                                     // Use fetch API to make a POST request

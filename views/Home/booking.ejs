@@ -268,10 +268,7 @@
                                     <div class="search-result">
                                         <div class="p-4 rounded-4 shadow-sm">
                                             <div class="boarding-details mb-3">
-                                                <span class="badge rounded-pill mb-1  fs-6"
-                                                    style="background-color: #388da8bf;">ID:
-                                                    <%=booking.schedule_id%>
-                                                </span>
+                                            
                                                 <span class="badge rounded-pill mb-1  fs-6"
                                                     style="background-color: #388da8bf;">₱
                                                     <%=booking.fare%>
@@ -768,16 +765,42 @@
                                                 </div>
                                                 <div class="total">
                                                     <div class="p-4 rounded-4 shadow-sm">
-                                                        <div class="row justify-content-between">
-                                                            <div class="col-md-6">
-                                                                <label for="discountInput"
-                                                                    class="form-label">Discount:</label>
+                                                        <div class="discount mb-1">
+
+                                                            <div class="row justify-content-between">
+                                                                <div class="col-md-5"> <label for="discount"
+                                                                        class="form-label">Discount
+                                                                        (optional)</label></div>
+                                                                <div class="col-md-7"><select class="form-control"
+                                                                        id="discount" name="discount"
+                                                                        onchange="applyDiscount()">
+                                                                        <option value="">No Discount</option>
+                                                                        <%discounts.forEach((discount)=> {%>
+                                                                            <option value="<%=discount.discount_id%>"
+                                                                                data-id="<%=discount.discount_percentage%>">
+                                                                                <%=discount.discount_type%> - <%=
+                                                                                        (discount.discount_percentage) *
+                                                                                        100%>%
+                                                                            </option>
+                                                                            <%})%>
+
+
+
+                                                                    </select></div>
                                                             </div>
 
-                                                            <div class="col-md-6">
-                                                                <input type="text" name="id_number" id="id_number"
-                                                                    class="form-control form-control-sm"
-                                                                    placeholder="Enter your id here...">
+                                                        </div>
+                                                        <div class="id_number" id="idNumberInput"
+                                                            style="display: none;">
+                                                            <div class="row justify-content-between" id="">
+                                                                <div class="col-md-5">
+                                                                    <label for="idNumber" class="form-label">ID
+                                                                        Number</label>
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    <input type="text" class="form-control"
+                                                                        id="idNumber" name="id_number">
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <p class="mb-0">Total: <span class="highlight float-end fs-5">
@@ -873,6 +896,44 @@
             <!-- Main JS File -->
             <script src="/assets/js/main.js"></script>
             <script>
+                function applyDiscount() {
+                    let fareInput2 = document.getElementById('fare_inp');
+var discountDropdown = document.getElementById('discount');
+var selectedOption = discountDropdown.options[discountDropdown.selectedIndex].value;
+var idNumberInput = document.getElementById('idNumberInput');
+var idNumber = document.getElementById('idNumber');
+let sub_total = document.querySelector('#sub_total')
+                        let total = document.querySelector('.total .highlight');
+// Check if a discount is selected (value is not empty)
+if (selectedOption !== "") {
+    idNumberInput.style.display = 'block';
+    idNumber.required = true // Show the ID number input
+} else {
+    idNumberInput.style.display = 'none';
+    idNumber.required = false // Hide the ID number input
+}
+var originalFare = document.getElementById('fare_inp2').value; // Get the original fare from the server
+
+var discountElement = document.getElementById('discount');
+var discountPercentage = parseFloat(discountElement.options[discountElement.selectedIndex].getAttribute('data-id')); // Get the selected discount percentage
+
+// Check if discountPercentage is NaN (which means "No Discount" was selected)
+if (isNaN(discountPercentage)) {
+    discountPercentage = 0; // Set discountPercentage to 0 if "No Discount" was selected
+}
+
+// Calculate the discounted fare
+var discountedFare = originalFare * (1 - discountPercentage);
+
+// Update the fare input field
+document.getElementById('fare_inp').value = discountedFare.toFixed(2); // Format to 2 decimal places
+
+sub_total.textContent = `₱ ${fareInput2.value}`
+total.textContent =  `₱ ${fareInput2.value}`
+}
+
+            </script>
+            <script>
                 document.addEventListener("DOMContentLoaded", function () {
                     const maxSeats = <%=passengerCount%>;  // Maximum seats a user can select, adjust as needed
                     const seats = document.querySelectorAll('.seat.available');
@@ -954,10 +1015,10 @@
                         event.preventDefault(); // Prevent the default form submission
                         const apiUrl = '/postBookingDetails';
                         const sch_inp = document.querySelector("#sch_inp").value;
-                        const fare_inp = document.querySelector("#fare_inp2").value;
+                        const fare_inp = document.querySelector("#fare_inp").value;
                         const drop_off = document.querySelector("#autocompleteInput").value;
-
-                        const id_number = document.querySelector("#id_number").value;
+                        const dis_inp = document.querySelector("#discount").value;
+                        const id_number = document.querySelector("#idNumber").value;
 
                         const selectedSeats = document.querySelectorAll('.seat.selected');
                         const selectedSeatIds = Array.from(selectedSeats).map(seat => seat.getAttribute('data-id').trim());
@@ -984,7 +1045,7 @@
                                 sch_inp,
                                 fare_inp,
                                 selectedSeatIds,
-                                drop_off, id_number
+                                drop_off, id_number,dis_inp
                             };
 
                             // Use fetch API to make a POST request

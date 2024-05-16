@@ -519,6 +519,10 @@
                                             year: 'numeric' }).format(new Date(booking_details.departure_date)) %> - <%=
                                                 booking_details.departure_time %>
                                     </span></p>
+
+                                    <p>Bus Number: <span class="highlight float-end" id="bus_number">
+                                        <%= booking_details.bus_number %>
+                                    </span></p>
                             </div>
                         </div>
                         <div class="fare">

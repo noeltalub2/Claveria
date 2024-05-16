@@ -526,23 +526,43 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="discount">
+                                                        <div class="discount mb-1">
 
                                                             <div class="row justify-content-between">
-                                                                <div class="col-md-5">  <label for="discount" class="form-label">Discount
-                                                                    (optional)</label></div>
-                                                                <div class="col-md-7"><select class="form-control" id="discount" name="discount"
-                                                                    onchange="applyDiscount()">
-                                                                    <option value="">No Discount</option>
-                                                                    <%discounts.forEach((discount) => {%>
-                                                                        <option value="<%=discount.discount_id%>" data-id="<%=discount.discount_percentage%>" ><%=discount.discount_type%> - <%= (discount.discount_percentage) * 100%>%</option>
-                                                                    <%})%>
-                                                                    
-                                                                   
-                                                                
-                                                                </select></div>
+                                                                <div class="col-md-5"> <label for="discount"
+                                                                        class="form-label">Discount
+                                                                        (optional)</label></div>
+                                                                <div class="col-md-7"><select class="form-control"
+                                                                        id="discount" name="discount"
+                                                                        onchange="applyDiscount()">
+                                                                        <option value="">No Discount</option>
+                                                                        <%discounts.forEach((discount)=> {%>
+                                                                            <option value="<%=discount.discount_id%>"
+                                                                                data-id="<%=discount.discount_percentage%>">
+                                                                                <%=discount.discount_type%> - <%=
+                                                                                        (discount.discount_percentage) *
+                                                                                        100%>%
+                                                                            </option>
+                                                                            <%})%>
+
+
+
+                                                                    </select></div>
                                                             </div>
-                                                            
+
+                                                        </div>
+                                                        <div class="id_number" id="idNumberInput"
+                                                            style="display: none;">
+                                                            <div class="row justify-content-between" id="">
+                                                                <div class="col-md-5">
+                                                                    <label for="idNumber" class="form-label">ID
+                                                                        Number</label>
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    <input type="text" class="form-control"
+                                                                        id="idNumber" name="id_number">
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                         <input type="hidden" id="orig_fare">
                                                         <input type="hidden" value="<%=schedule_id%>" id="schedule_id"
@@ -557,7 +577,7 @@
 
                                                 </div>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
 
@@ -674,22 +694,36 @@
             </script>
             <script>
                 function applyDiscount() {
-    var originalFare = document.getElementById('orig_fare').value; // Get the original fare from the server
-console.log(originalFare)
-    var discountElement = document.getElementById('discount');
-    var discountPercentage = parseFloat(discountElement.options[discountElement.selectedIndex].getAttribute('data-id')); // Get the selected discount percentage
 
-    // Check if discountPercentage is NaN (which means "No Discount" was selected)
-    if (isNaN(discountPercentage)) {
-        discountPercentage = 0; // Set discountPercentage to 0 if "No Discount" was selected
-    }
+                    var discountDropdown = document.getElementById('discount');
+                    var selectedOption = discountDropdown.options[discountDropdown.selectedIndex].value;
+                    var idNumberInput = document.getElementById('idNumberInput');
+                    var idNumber = document.getElementById('idNumber');
 
-    // Calculate the discounted fare
-    var discountedFare = originalFare * (1 - discountPercentage);
+                    // Check if a discount is selected (value is not empty)
+                    if (selectedOption !== "") {
+                        idNumberInput.style.display = 'block';
+                        idNumber.required = true // Show the ID number input
+                    } else {
+                        idNumberInput.style.display = 'none';
+                        idNumber.required = false // Hide the ID number input
+                    }
+                    var originalFare = document.getElementById('orig_fare').value; // Get the original fare from the server
 
-    // Update the fare input field
-    document.getElementById('fare').value = discountedFare.toFixed(2); // Format to 2 decimal places
-}
+                    var discountElement = document.getElementById('discount');
+                    var discountPercentage = parseFloat(discountElement.options[discountElement.selectedIndex].getAttribute('data-id')); // Get the selected discount percentage
+
+                    // Check if discountPercentage is NaN (which means "No Discount" was selected)
+                    if (isNaN(discountPercentage)) {
+                        discountPercentage = 0; // Set discountPercentage to 0 if "No Discount" was selected
+                    }
+
+                    // Calculate the discounted fare
+                    var discountedFare = originalFare * (1 - discountPercentage);
+
+                    // Update the fare input field
+                    document.getElementById('fare').value = discountedFare.toFixed(2); // Format to 2 decimal places
+                }
 
                 document.addEventListener("DOMContentLoaded", function () {
                     const maxSeats = 1;
@@ -711,7 +745,7 @@ console.log(originalFare)
 
 
 
-                    
+
 
                     const routes = <%- JSON.stringify(sub_routes) %>;
                     const origins = routes.map(route => route.origin);
@@ -762,12 +796,12 @@ console.log(originalFare)
                     form.addEventListener('submit', function (event) {
                         event.preventDefault(); // Prevent the default form submission
                         const sch_inp = document.querySelector("#schedule_id").value;
-                            const fare_inp = document.querySelector("#fare").value;
-                            const dis_inp = document.querySelector("#discount").value;
-                            const drop_off = document.querySelector("#autocompleteInput").value;
+                        const fare_inp = document.querySelector("#fare").value;
+                        const dis_inp = document.querySelector("#discount").value;
+                        const drop_off = document.querySelector("#autocompleteInput").value;
                         const selectedSeats = document.querySelectorAll('.seat.selected');
                         const selectedSeatIds = Array.from(selectedSeats).map(seat => seat.getAttribute('data-id').trim());
-
+                        const id_number = document.querySelector("#idNumber").value;
 
                         // Add alert if the maxSeats is not equal to what is selected
                         if (selectedSeats.length != maxSeats) {
@@ -775,23 +809,23 @@ console.log(originalFare)
 
                         } else if (fare_inp === '') {
                             Swal.fire({
-                                                            position: "top-end",
-                                                            icon: "error",
-                                                            title: `Invalid Drop Off Point`,
-                                                            showConfirmButton: false,
-                                                            timer: 2000
-                                                        })
-                        }else {
+                                position: "top-end",
+                                icon: "error",
+                                title: `Invalid Drop Off Point`,
+                                showConfirmButton: false,
+                                timer: 2000
+                            })
+                        } else {
                             // Define the API endpoint
                             const apiUrl = '/admin/route-schedule/walkin/';
-                      
+
                             // Create the data object containing the schedule ID
                             const data = {
                                 sch_inp,
                                 fare_inp,
                                 drop_off,
                                 selectedSeatIds,
-                                dis_inp
+                                dis_inp,id_number
                             };
 
                             // Use fetch API to make a POST request
@@ -821,12 +855,12 @@ console.log(originalFare)
                     });
                 })
             </script>
-<script>
-    new DataTable('#bookingTable', {
-                    
+            <script>
+                new DataTable('#bookingTable', {
+
 
                 });
-</script>
+            </script>
     </body>
 
     </html>

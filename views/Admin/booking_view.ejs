@@ -106,7 +106,17 @@
                                                             
                                                             </select>
                                                         </div>
-
+                                                        <div class="mb-3" id="idNumberInput"
+                                                        style="display: none;">
+                                                        
+                                                                <label for="idNumber" class="form-label">ID
+                                                                    Number</label>
+                                                            
+                                                                <input type="text" class="form-control"
+                                                                    id="id_number" name="id_number" value="<%=booking_details.id_number%>">
+                                                         
+                                                        </div>
+                                                 
 
                                                         <div class="mb-3">
                                                             <label for="fare" class="form-label">Fare</label>
@@ -146,11 +156,27 @@
         </div>
         <%-include ("../Includes/Admin/script.ejs")%>
             <script>
+                document.addEventListener('DOMContentLoaded', function() {
+    applyDiscount(); // Call this function on page load
+});
                 const routes = <%- JSON.stringify(sub_routes) %>;
                 const origins = routes.map(route => route.origin);
                 const fares = routes.map(route => route.fare);
 
                 function applyDiscount() {
+                    var discountDropdown = document.getElementById('discount');
+                    var selectedOption = discountDropdown.options[discountDropdown.selectedIndex].value;
+                    var idNumberInput = document.getElementById('idNumberInput');
+                    var idNumber = document.getElementById('id_number');
+
+                    // Check if a discount is selected (value is not empty)
+                    if (selectedOption !== "") {
+                        idNumberInput.style.display = 'block';
+                        idNumber.required = true // Show the ID number input
+                    } else {
+                        idNumberInput.style.display = 'none';
+                        idNumber.required = false // Hide the ID number input
+                    }
     var originalFare = document.getElementById('orig_fare').value; // Get the original fare from the server
 
     var discountElement = document.getElementById('discount');

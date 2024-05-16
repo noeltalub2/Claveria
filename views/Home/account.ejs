@@ -241,6 +241,7 @@
                                 <th scope="col">#</th>
                                 <th scope="col">ROUTE</th>
                                 <th scope="col">DEPARTURE</th>
+                                <th scope="col">BUS NUMBER</th>
                                 <th scope="col">SEAT NUMBER</th>
                                 <th scope="col">DROP OFF</th>
                                 <th scope="col">TOTAL AMOUNT</th>
@@ -266,6 +267,9 @@
                                             year: 'numeric' }).format(booking.departure_date) %> <br>
                                             <%=booking.departure_time%>
 
+                                    </td>
+                                    <td>
+                                        <%= booking.bus_number %>
                                     </td>
                                     <td class="text-center">
                                         <%= booking.seat_numbers %>
@@ -312,6 +316,7 @@
                                 <th scope="col">#</th>
                                 <th scope="col">ROUTE</th>
                                 <th scope="col">DEPARTURE</th>
+                                <th scope="col">BUS NUMBER</th>
                                 <th scope="col">SEAT NUMBER</th>
                                 <th scope="col">DROP OFF</th>
                                 <th scope="col">TOTAL AMOUNT</th>
@@ -337,6 +342,9 @@
                                             year: 'numeric' }).format(booking.departure_date) %> <br>
                                             <%=booking.departure_time%>
 
+                                    </td>
+                                    <td>
+                                        <%= booking.bus_number %>
                                     </td>
                                     <td class="text-center">
                                         <%= booking.seat_numbers %>

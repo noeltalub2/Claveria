@@ -114,7 +114,7 @@ const getBooking = async (req, res) => {
 const getBookingRoute = async (req, res) => {
 	const id = req.params.id;
 	const routes_schedule = await query(
-		"SELECT routes.start_point, routes.end_point, schedules.departure_time, schedules.schedule_id, schedules.arrival_time, schedules.departure_date FROM schedules JOIN routes ON schedules.route_id = routes.route_id WHERE schedules.status = 'Active' AND routes.route_id = ? AND schedules.departure_date = CURDATE() ORDER BY `schedules`.`departure_time` ASC;",
+		"SELECT routes.start_point, routes.end_point, schedules.departure_time, schedules.schedule_id, schedules.arrival_time, schedules.departure_date FROM schedules JOIN routes ON schedules.route_id = routes.route_id WHERE schedules.status = 'Active' AND routes.route_id = ? AND schedules.departure_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 2 DAY) ORDER BY `schedules`.`departure_date` ASC;",
 		[id]
 	);
 
@@ -175,20 +175,18 @@ const getUserBookingDetails = async (req, res) => {
 };
 
 const postUserEditBookingDetails = async (req, res) => {
-	const { drop_off, fare, booking_id, discount } = req.body;
+	const { drop_off, fare, booking_id, discount,id_number } = req.body;
 
 	try {
 		const data = {
 			drop_off,
 			fare_paid: fare,
+			id_number: id_number || null,
+			discount_id: discount || null,
 			dateModified: "CURRENT_TIMESTAMP()",
 		};
 
-		if (discount) {
-			data.discount_id = discount;
-		} else {
-			data.discount_id = null;
-		}
+		
 
 		const sql = "UPDATE bookings SET ? WHERE booking_id = ?";
 		db.query(sql, [data, booking_id], (err, result) => {
@@ -412,12 +410,15 @@ const getTicket = async (req, res) => {
 
 	const details = (
 		await query(
-			"SELECT COUNT(*) AS 'count', b.status, b.booking_id, b.user_id, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers, b.fare_paid, r.end_point, r.start_point, s.departure_time, r.fare, s.departure_date FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id WHERE b.booking_id = ? AND b.user_id = ? AND b.status IN ('Pending', 'Paid') GROUP BY b.booking_id;",
+			"SELECT COUNT(*) AS 'count', b.status,bs.bus_number, b.booking_id, b.user_id, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers, b.fare_paid, r.end_point, r.start_point, s.departure_time, r.fare, s.departure_date FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id INNER JOIN buses bs ON bs.bus_id = s.bus_id WHERE b.booking_id = ? AND b.user_id = ? AND b.status IN ('Pending', 'Paid') GROUP BY b.booking_id;",
 			[booking_id, user_id]
 		)
 	)[0];
 
-	const doc = new PDFDocument();
+	const doc = new PDFDocument({
+		size: [144, 792],
+		margins: { top: 0, bottom: 0, left: 0, right: 0 }, // 2 inches wide by 11 inches tall (144 points = 2 inches)
+	});
 
 	let fileName = `Claveria_Bus_Ticket_${Date.now()}.pdf`;
 	res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
@@ -425,75 +426,40 @@ const getTicket = async (req, res) => {
 
 	// Logo
 	const logoPath = path.join(__dirname, "..", "public", "images", "logo.png");
-
-	doc.image(logoPath, 180, 40, { width: 40 }).moveDown(0.5);
+	doc.image(logoPath, 12, 15, { width: 25 });
 
 	// Title and Subtitle
-	doc.fontSize(24)
-		.text("Claveria Tour Inc.", 120, 50, { align: "center" })
-		.fontSize(10)
-		.text("Official Ticket", 110, 80, { align: "center" });
+	doc.fontSize(8) // Smaller font size for the narrow format
+		.text("Claveria Tour Inc.", 20, 20, { align: "center" })
+		.fontSize(6) // Even smaller for subtext
+		.text("Official Ticket", 20, 30, { align: "center" });
 
-	// Horizontal Line to separate header
-	doc.moveTo(50, 120).lineTo(550, 120).stroke();
-	doc.fontSize(14).text(`OR NUMBER: ${details.booking_id}`, 70, 130);
-	// Ticket Details
-	doc.fontSize(12)
+	// Ticket Details moved closer to the logo
+	doc.fontSize(6)
+		.text(`OR Number: ${details.booking_id}`, 10, 50) // Start immediately after subtitle
 		.text(
 			`Departure Date: ${new Intl.DateTimeFormat("en-US", {
 				month: "short",
 				day: "2-digit",
 				year: "numeric",
-			}).format(
-				new Date(details.departure_date)
-			)} ${new Intl.DateTimeFormat("en-US", {
-				weekday: "short",
 			}).format(new Date(details.departure_date))}`,
-			70,
-			150
+			10,
+			60
 		)
-		.text(`Departure Time: ${details.departure_time}`, 70, 170)
-		.text(`Origin: ${details.start_point}`, 70, 190)
-		.text(`Destination: ${details.end_point}`, 70, 210)
-		.text(`Seat Number(s): ${details.seat_numbers}`, 70, 230)
-		.text(`Total Amount: ${details.fare_paid}`, 70, 250)
-		.text(`Status: ${details.status}`, 70, 270);
+		.text(`Departure Time: ${details.departure_time}`, 10, 70)
+		.text(`Origin: ${details.start_point}`, 10, 80)
+		.text(`Destination: ${details.end_point}`, 10, 90)
+		.text(`Bus Number: ${details.bus_number}`, 10, 100)
+		.text(`Seat Number(s): ${details.seat_numbers}`, 10, 110)
+		.text(`Total Amount: ${details.fare_paid}`, 10, 120)
+		.text(`Status: ${details.status}`, 10, 130);
 
-	doc.fontSize(9)
-		.text("TERMS AND CONDITION", 70, 300)
-		.text("• This Reservation Slip is non-refundable.", 90, 320)
-		.text(
-			"• Strictly no boarding/rebooking is allowed for lost reservation slip.",
-			90,
-			330
-		)
-		.text("• Request for rebooking shall only be allowed once.", 90, 340)
-		.text(
-			"• Re-scheduling/Rebooking may be allowed only if the next reservation is not fully booked.",
-			90,
-			350
-		)
-		.text(
-			"• All passengers are expected to board 15minutes before the scheduled time of departure.",
-			90,
-			360
-		)
-		.text(
-			"• Always keep your Reservation Slip and/or Ticket while on board.",
-			90,
-			370
-		)
-		.text(
-			"• Present your Reservation Slip and/or Ticket upon inspection.",
-			90,
-			380
-		);
 	// Footer
-	doc.fontSize(10)
+	doc.fontSize(6)
 		.fillColor("grey")
-		.text("Thank you for choosing our service!", 50, 450, {
+		.text("Thank you for choosing our service!", 10, 140, {
 			align: "center",
-			width: 500,
+			width: 144,
 		});
 
 	doc.pipe(res);
@@ -507,7 +473,7 @@ const postRouteScheduleWalkIn = async (req, res) => {
 		const discount_id = req.body.dis_inp;
 		const drop_off = req.body.drop_off;
 		const seats = req.body.selectedSeatIds;
-
+		const id_number = req.body.id_number;
 		let booking = {
 			user_id: 1,
 			schedule_id,
@@ -515,6 +481,7 @@ const postRouteScheduleWalkIn = async (req, res) => {
 			status: "Paid",
 			booking_type: "Walk In",
 			drop_off: drop_off,
+			id_number: id_number || null,
 			discount_id: discount_id || null,
 			booking_date: new Date().toISOString().slice(0, 10),
 			booking_expiration: new Date(

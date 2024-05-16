@@ -59,7 +59,6 @@ const postLogin = async (req, res) => {
 };
 
 const getRoutes = async (req, res) => {
-	
 	const available_schedule = await query(
 		"SELECT COUNT(pp.psg_id) AS passenger_count, b.bus_number, sch.schedule_id, sch.route_id, sch.bus_id,  DATE_FORMAT(sch.departure_time, '%r') AS departure_time, DATE_FORMAT(sch.arrival_time, '%r') AS arrival_time, sch.departure_date, rt.fare, rt.start_point, rt.end_point, rt.route_id FROM schedules sch JOIN routes rt ON sch.route_id = rt.route_id JOIN buses b ON sch.bus_id = b.bus_id JOIN conductors c ON c.cnd_id = sch.conductor_id LEFT JOIN pickup_passenger pp ON pp.schedule_id = sch.schedule_id WHERE sch.departure_date = CURDATE() AND sch.status = 'Active' AND sch.conductor_id = ? GROUP BY sch.schedule_id, sch.route_id, sch.bus_id, sch.departure_time, sch.arrival_time, sch.departure_date, rt.fare, rt.start_point, rt.end_point, b.bus_number;",
 		[res.locals.user.id]
@@ -79,7 +78,7 @@ const getRoutes = async (req, res) => {
 	} else {
 		sub_routes = [];
 	}
-	
+
 	res.render("Conductor/routes", {
 		available_schedule,
 		sub_routes,
@@ -88,46 +87,58 @@ const getRoutes = async (req, res) => {
 };
 
 const postAddPassenger = async (req, res) => {
-	const { origin, destination, fare, schedule_id } = req.body;
+	const { origin, destination, fare, schedule_id, passenger_count } =
+		req.body;
 
-	let fullname = req.body.fullname
-	
+	let fullname = req.body.fullname;
 	if (!fullname) {
-		fullname = "PICK UP"
+		fullname = "PICK UP";
 	}
+
+	// Calculate fare per passenger
+	const farePerPassenger = fare / passenger_count;
+
 	try {
 		const query =
-			"INSERT INTO pickup_passenger (fullname, origin, destination, fare_paid, schedule_id, conductor_id) VALUES (?, ?, ?, ?, ?,?)";
+			"INSERT INTO pickup_passenger (fullname, origin, destination, fare_paid, schedule_id, conductor_id) VALUES (?, ?, ?, ?, ?, ?)";
 
-		db.query(
-			query,
-			[
-				fullname,
-				origin,
-				destination,
-				fare,
-				schedule_id,
-				res.locals.user.id,
-			],
-			(err, results) => {
-				if (err) {
-					console.log(err);
-					return res.status(500).json({
-						success: false,
-						message: "There was an error adding the passenger.",
-					});
+		// Loop to insert each passenger
+		for (let i = 0; i < passenger_count; i++) {
+			db.query(
+				query,
+				[
+					fullname,
+					origin,
+					destination,
+					farePerPassenger,
+					schedule_id,
+					res.locals.user.id,
+				],
+				(error, results) => {
+					if (error) {
+						console.log(error);
+						return res.status(500).json({
+							success: false,
+							message:
+								"There was an error adding the passenger(s).",
+						});
+					}
+
+					
 				}
-				// Return a JSON response indicating success
-				res.status(200).json({
-					success: true,
-					message: "Passenger added successfully.",
-				});
-			}
-		);
-	} catch (e) {
+			);
+		}
+
+		// Return a JSON response indicating success
+		return res.status(200).json({
+			success: true,
+			message: "Passenger(s) added successfully.",
+		});
+	} catch (err) {
+		console.error(err);
 		return res.status(500).json({
 			success: false,
-			message: "There was an error.",
+			message: "There was an error adding the passenger(s).",
 		});
 	}
 };
