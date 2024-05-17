@@ -64,23 +64,24 @@ db.getConnection((err, connection) => {
 
 // Function to update schedule statuses
 const updateScheduleStatus = () => {
-	const query = `
-	  UPDATE schedules
-	  SET status = 'Inactive'
-	  WHERE arrival_time < CURTIME() AND departure_date <= CURDATE() AND status = 'Active';
-	`;
+    const query = `
+      UPDATE schedules
+      SET status = 'Inactive'
+      WHERE (CURDATE() > departure_date OR (CURDATE() = departure_date AND CURTIME() > arrival_time)) AND status = 'Active';
+    `;
 
-	connection.query(query, (err, results) => {
-		if (err) {
-			console.error("Error updating schedules:", err);
-			return;
-		}
-		console.log("Schedules updated:", results.affectedRows);
-	});
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error("Error updating schedules:", err);
+            return;
+        }
+        console.log("Schedules updated:", results.affectedRows);
+    });
 };
 
+
 // Schedule the status update to run every minute
-cron.schedule("*/15 * * * *", () => {
+cron.schedule("*/1 * * * *", () => {
 	console.log("Running scheduled task to update schedule statuses");
 	updateScheduleStatus();
 });

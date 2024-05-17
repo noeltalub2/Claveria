@@ -113,15 +113,20 @@ const getBooking = async (req, res) => {
 
 const getBookingRoute = async (req, res) => {
 	const id = req.params.id;
+	const date = req.query.date || new Date().toISOString().split('T')[0];
+
+	
 	const routes_schedule = await query(
-		"SELECT routes.start_point, routes.end_point, schedules.departure_time, schedules.schedule_id, schedules.arrival_time, schedules.departure_date FROM schedules JOIN routes ON schedules.route_id = routes.route_id WHERE schedules.status = 'Active' AND routes.route_id = ? AND schedules.departure_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 2 DAY) ORDER BY `schedules`.`departure_date` ASC;",
-		[id]
+		"SELECT routes.start_point, routes.end_point, schedules.departure_time, schedules.schedule_id, schedules.arrival_time, schedules.departure_date FROM schedules JOIN routes ON schedules.route_id = routes.route_id WHERE schedules.status = 'Active' AND (routes.route_id = ? AND schedules.departure_date = ?) ORDER BY schedules.departure_date ASC;",
+		[id, date]
 	);
 
 	res.render("Admin/booking_route", {
 		title: "Booking Route",
 		page: "booking",
 		routes_schedule,
+		route_id: id,
+		cur_date: date
 	});
 };
 
@@ -175,7 +180,7 @@ const getUserBookingDetails = async (req, res) => {
 };
 
 const postUserEditBookingDetails = async (req, res) => {
-	const { drop_off, fare, booking_id, discount,id_number } = req.body;
+	const { drop_off, fare, booking_id, discount, id_number } = req.body;
 
 	try {
 		const data = {
@@ -185,8 +190,6 @@ const postUserEditBookingDetails = async (req, res) => {
 			discount_id: discount || null,
 			dateModified: "CURRENT_TIMESTAMP()",
 		};
-
-		
 
 		const sql = "UPDATE bookings SET ? WHERE booking_id = ?";
 		db.query(sql, [data, booking_id], (err, result) => {
