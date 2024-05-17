@@ -113,9 +113,8 @@ const getBooking = async (req, res) => {
 
 const getBookingRoute = async (req, res) => {
 	const id = req.params.id;
-	const date = req.query.date || new Date().toISOString().split('T')[0];
+	const date = req.query.date || new Date().toISOString().split("T")[0];
 
-	
 	const routes_schedule = await query(
 		"SELECT routes.start_point, routes.end_point, schedules.departure_time, schedules.schedule_id, schedules.arrival_time, schedules.departure_date FROM schedules JOIN routes ON schedules.route_id = routes.route_id WHERE schedules.status = 'Active' AND (routes.route_id = ? AND schedules.departure_date = ?) ORDER BY schedules.departure_date ASC;",
 		[id, date]
@@ -126,7 +125,7 @@ const getBookingRoute = async (req, res) => {
 		page: "booking",
 		routes_schedule,
 		route_id: id,
-		cur_date: date
+		cur_date: date,
 	});
 };
 
@@ -157,10 +156,11 @@ const getUserBookingDetails = async (req, res) => {
 
 	const booking_details = (
 		await query(
-			"SELECT COUNT(*) AS 'count', bs.bus_number, b.id_number, s.bus_id, b.drop_off, r.route_id, s.schedule_id, u.fullname, b.status, b.booking_id, b.user_id, b.discount_id, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers, b.fare_paid, r.end_point, r.start_point, s.departure_time, r.fare, s.departure_date FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id JOIN users u ON u.acc_id = b.user_id INNER JOIN buses bs ON bs.bus_id = s.bus_id WHERE b.booking_id = ? GROUP BY b.booking_id;",
+			"SELECT COUNT(*) AS 'count', bs.bus_number, d.discount_percentage, b.id_number, s.bus_id, b.drop_off, r.route_id, s.schedule_id, u.fullname, b.status, b.booking_id, b.user_id, b.discount_id, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers, b.fare_paid, r.end_point, r.start_point, s.departure_time, r.fare, s.departure_date FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id JOIN users u ON u.acc_id = b.user_id INNER JOIN buses bs ON bs.bus_id = s.bus_id LEFT JOIN discounts d ON d.discount_id = b.discount_id WHERE b.booking_id = ? GROUP BY b.booking_id;",
 			[id]
 		)
 	)[0];
+
 	const discounts = await query("SELECT * FROM discounts");
 	const sub_routes = await query(
 		"SELECT sr.* FROM sub_routes sr INNER JOIN routes r ON r.route_id = sr.route_id WHERE sr.destination = ?",
@@ -259,8 +259,10 @@ const paidBooking = async (req, res) => {
 const downloadBooking = async (req, res) => {};
 
 const getRouteSchedule = async (req, res) => {
+	const date = req.query.date || new Date().toISOString().split("T")[0];
 	const route_schedule = await query(
-		"SELECT r.start_point, r.end_point, s.*, b.bus_number, b.bus_status, b.bus_id, s.schedule_id FROM schedules s INNER JOIN buses b ON s.bus_id = b.bus_id JOIN routes r ON r.route_id = s.route_id ORDER BY s.schedule_id DESC"
+		"SELECT r.start_point, r.end_point, s.*, b.bus_number, b.bus_status, b.bus_id, s.schedule_id FROM schedules s INNER JOIN buses b ON s.bus_id = b.bus_id JOIN routes r ON r.route_id = s.route_id WHERE s.departure_date = ? ORDER BY s.schedule_id DESC",
+		[date]
 	);
 
 	const buses = await query(
@@ -277,6 +279,7 @@ const getRouteSchedule = async (req, res) => {
 		buses,
 		routes,
 		conductors,
+		cur_date: date,
 	});
 };
 

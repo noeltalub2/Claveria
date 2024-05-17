@@ -1013,9 +1013,21 @@ total.textContent =  `₱ ${fareInput2.value}`
 
                     form.addEventListener('submit', function (event) {
                         event.preventDefault(); // Prevent the default form submission
+                        let fare_inp;
                         const apiUrl = '/postBookingDetails';
                         const sch_inp = document.querySelector("#sch_inp").value;
-                        const fare_inp = document.querySelector("#fare_inp").value;
+                        const fare_inp_discount = document.querySelector("#fare_inp").value;
+                        const fare_inp_orig = document.querySelector("#fare_inp2").value;
+
+                        if (fare_inp_discount < fare_inp_orig) {
+                            console.log("HAVE DISCOUNT")
+                            fare_inp = fare_inp_discount
+                        } else {
+                            console.log("NO DISCOUNT")
+                            fare_inp = fare_inp_orig
+                        }
+
+                        
                         const drop_off = document.querySelector("#autocompleteInput").value;
                         const dis_inp = document.querySelector("#discount").value;
                         const id_number = document.querySelector("#idNumber").value;
@@ -1095,7 +1107,7 @@ total.textContent =  `₱ ${fareInput2.value}`
                     })
                         .then(response => response.json())
                         .then(data => {
-                            console.log(data)
+                     
                             const seat_containers = document.querySelectorAll('#seat_container');
 
                             seat_container.classList.remove('d-none');

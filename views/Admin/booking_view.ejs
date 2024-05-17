@@ -107,7 +107,7 @@
                                                             </select>
                                                         </div>
                                                         <div class="mb-3" id="idNumberInput"
-                                                        style="display: none;">
+                                                        style="<%=booking_details.discount_id === null ? 'display: none' : 'display: block'%>">
                                                         
                                                                 <label for="idNumber" class="form-label">ID
                                                                     Number</label>
@@ -156,43 +156,48 @@
         </div>
         <%-include ("../Includes/Admin/script.ejs")%>
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
-    applyDiscount(); // Call this function on page load
-});
+        
                 const routes = <%- JSON.stringify(sub_routes) %>;
                 const origins = routes.map(route => route.origin);
                 const fares = routes.map(route => route.fare);
-
                 function applyDiscount() {
-                    var discountDropdown = document.getElementById('discount');
-                    var selectedOption = discountDropdown.options[discountDropdown.selectedIndex].value;
-                    var idNumberInput = document.getElementById('idNumberInput');
-                    var idNumber = document.getElementById('id_number');
+    var discountDropdown = document.getElementById('discount');
+    var selectedOption = discountDropdown.options[discountDropdown.selectedIndex];
+    var discountValue = selectedOption.value;
+    var discountPercentage = parseFloat(selectedOption.getAttribute('data-id'));
 
-                    // Check if a discount is selected (value is not empty)
-                    if (selectedOption !== "") {
-                        idNumberInput.style.display = 'block';
-                        idNumber.required = true // Show the ID number input
-                    } else {
-                        idNumberInput.style.display = 'none';
-                        idNumber.required = false // Hide the ID number input
-                    }
-    var originalFare = document.getElementById('orig_fare').value; // Get the original fare from the server
+    var idNumberInput = document.getElementById('idNumberInput');
+    var idNumber = document.getElementById('id_number');
 
-    var discountElement = document.getElementById('discount');
-    var discountPercentage = parseFloat(discountElement.options[discountElement.selectedIndex].getAttribute('data-id')); // Get the selected discount percentage
-
-    // Check if discountPercentage is NaN (which means "No Discount" was selected)
-    if (isNaN(discountPercentage)) {
-        discountPercentage = 0; // Set discountPercentage to 0 if "No Discount" was selected
+    // Toggle ID number input visibility based on discount selection
+    if (discountValue !== "") {
+        idNumberInput.style.display = 'block';
+        idNumber.required = true;
+    } else {
+        idNumberInput.style.display = 'none';
+        idNumber.required = false;
     }
 
-    // Calculate the discounted fare
-    var discountedFare = originalFare * (1 - discountPercentage);
+    var originalFare = parseFloat(document.getElementById('orig_fare').value);
+    var currentDiscountPercentage = parseFloat('<%= booking_details.discount_percentage %>') || 0;
 
-    // Update the fare input field
-    document.getElementById('fare').value = discountedFare.toFixed(2); // Format to 2 decimal places
+    // Determine the base fare to use for calculations
+    var baseFare = originalFare / (1 - currentDiscountPercentage);
+
+    // Calculate the fare based on the selected discount
+    if (!isNaN(discountPercentage) && discountPercentage > 0) {
+        var discountedFare = baseFare * (1 - discountPercentage);
+    } else {
+        // If no discount is selected or an invalid discount is detected, use the base fare
+        discountedFare = baseFare;
+    }
+
+    // Update the fare input field to reflect the correct fare
+    document.getElementById('fare').value = discountedFare.toFixed(2);
 }
+
+
+
                 document.getElementById('autocompleteInput').addEventListener('input', function () {
                     let input = this.value;
                     let autocompleteList = document.getElementById('autocompleteList');
