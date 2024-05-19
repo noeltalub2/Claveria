@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 16, 2024 at 06:14 PM
+-- Generation Time: May 19, 2024 at 07:08 PM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 8.1.10
 
@@ -89,21 +89,6 @@ CREATE TABLE `bookings` (
   `dateModified` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `bookings`
---
-
-INSERT INTO `bookings` (`booking_id`, `user_id`, `booking_date`, `fare_paid`, `schedule_id`, `status`, `booking_type`, `drop_off`, `discount_id`, `booking_expiration`, `id_number`, `dateAdded`, `dateModified`) VALUES
-(1, 2, '2024-05-16', '50.00', 1, 'Paid', 'Online', 'Cadcadir', NULL, '2024-05-17', 'ABCD1234', '2024-05-16 10:58:47', '2024-05-16 11:06:42'),
-(2, 2, '2024-05-16', '44.80', 2, 'Paid', 'Online', 'Saranay', 1, '2024-05-17', '123213', '2024-05-16 22:33:59', '2024-05-16 23:41:46'),
-(3, 1, '2024-05-16', '56.00', 2, 'Paid', 'Walk In', 'Saranay', 1, '2024-05-17', '12312', '2024-05-16 23:21:51', NULL),
-(4, 2, '2024-05-16', '50.00', 2, 'Pending', 'Online', 'Cadcadir', 1, '2024-05-17', 'asda', '2024-05-17 00:04:10', NULL),
-(5, 2, '2024-05-16', '250.00', 2, 'Pending', 'Online', 'Claveria', NULL, '2024-05-17', NULL, '2024-05-17 00:04:37', NULL),
-(6, 2, '2024-05-16', '50.00', 2, 'Pending', 'Online', 'Sta. Praxedes', 1, '2024-05-17', 'asdada', '2024-05-17 00:09:08', NULL),
-(7, 2, '2024-05-16', '50.00', 2, 'Pending', 'Online', 'Sta. Praxedes', 1, '2024-05-17', 'asdasd', '2024-05-17 00:09:37', NULL),
-(8, 2, '2024-05-16', '50.00', 2, 'Pending', 'Online', 'Sta. Praxedes', 2, '2024-05-17', 'qweqwe', '2024-05-17 00:10:14', NULL),
-(9, 2, '2024-05-16', '56.00', 2, 'Pending', 'Online', 'Saranay', 1, '2024-05-17', 'wewew', '2024-05-17 00:12:02', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -174,7 +159,8 @@ CREATE TABLE `discounts` (
 
 INSERT INTO `discounts` (`discount_id`, `discount_type`, `discount_percentage`, `status`) VALUES
 (1, 'STUDENT', '0.20', 'Active'),
-(2, 'PWD', '0.20', 'Active');
+(2, 'PWD', '0.20', 'Active'),
+(3, 'SENIOR', '0.30', 'Active');
 
 -- --------------------------------------------------------
 
@@ -231,35 +217,10 @@ CREATE TABLE `pickup_passenger` (
   `origin` varchar(45) NOT NULL,
   `destination` varchar(45) NOT NULL,
   `fare_paid` decimal(10,2) NOT NULL,
+  `id_number` varchar(45) DEFAULT NULL,
   `status` varchar(45) NOT NULL DEFAULT 'Paid',
   `dateAdded` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `pickup_passenger`
---
-
-INSERT INTO `pickup_passenger` (`psg_id`, `schedule_id`, `conductor_id`, `fullname`, `origin`, `destination`, `fare_paid`, `status`, `dateAdded`) VALUES
-(1, 1, 1, 'PICK UP', 'qwe', 'qwe', '50.00', 'Paid', '2024-05-16 23:49:33'),
-(2, 1, 1, 'qweqw', 'qwe', 'qwe', '50.00', 'Paid', '2024-05-16 23:52:03'),
-(3, 1, 1, 'qweqw', 'qwe', 'qwe', '50.00', 'Paid', '2024-05-16 23:52:03'),
-(4, 1, 1, 'qweqw', 'qwe', 'qwe', '50.00', 'Paid', '2024-05-16 23:52:03'),
-(5, 1, 1, 'qweqw', 'qwe', 'qwe', '50.00', 'Paid', '2024-05-16 23:52:03'),
-(6, 1, 1, 'PICK UP', 'qwe', 'qwe', '65.00', 'Paid', '2024-05-16 23:52:38'),
-(7, 1, 1, 'PICK UP', 'qwe', 'qwe', '65.00', 'Paid', '2024-05-16 23:52:38'),
-(8, 1, 1, 'PICK UP', 'qwe', 'we', '22.20', 'Paid', '2024-05-16 23:53:02'),
-(9, 1, 1, 'PICK UP', 'qwe', 'we', '22.20', 'Paid', '2024-05-16 23:53:02'),
-(10, 1, 1, 'PICK UP', 'qwe', 'we', '22.20', 'Paid', '2024-05-16 23:53:02'),
-(11, 1, 1, 'PICK UP', 'qwe', 'we', '22.20', 'Paid', '2024-05-16 23:53:02'),
-(12, 1, 1, 'PICK UP', 'qwe', 'we', '22.20', 'Paid', '2024-05-16 23:53:02'),
-(13, 1, 1, 'PICK UP', 'qwe', 'weqwe', '31.25', 'Paid', '2024-05-16 23:53:52'),
-(14, 1, 1, 'PICK UP', 'qwe', 'weqwe', '31.25', 'Paid', '2024-05-16 23:53:52'),
-(15, 1, 1, 'PICK UP', 'qwe', 'weqwe', '31.25', 'Paid', '2024-05-16 23:53:52'),
-(16, 1, 1, 'PICK UP', 'qwe', 'weqwe', '31.25', 'Paid', '2024-05-16 23:53:52'),
-(17, 1, 1, 'PICK UP', 'qwe', 'weqwe', '31.25', 'Paid', '2024-05-16 23:53:52'),
-(18, 1, 1, 'PICK UP', 'qwe', 'weqwe', '31.25', 'Paid', '2024-05-16 23:53:52'),
-(19, 1, 1, 'PICK UP', 'qwe', 'weqwe', '31.25', 'Paid', '2024-05-16 23:53:52'),
-(20, 1, 1, 'PICK UP', 'qwe', 'weqwe', '31.25', 'Paid', '2024-05-16 23:53:52');
 
 -- --------------------------------------------------------
 
@@ -300,14 +261,6 @@ CREATE TABLE `schedules` (
   `status` varchar(50) DEFAULT 'Active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `schedules`
---
-
-INSERT INTO `schedules` (`schedule_id`, `route_id`, `bus_id`, `conductor_id`, `departure_time`, `arrival_time`, `departure_date`, `status`) VALUES
-(1, 1, 3, 1, '06:00:00', '10:30:00', '2024-05-16', 'Active'),
-(2, 1, 2, 1, '05:30:00', '09:30:00', '2024-05-17', 'Active');
-
 -- --------------------------------------------------------
 
 --
@@ -319,21 +272,6 @@ CREATE TABLE `seats` (
   `booking_id` int(11) NOT NULL,
   `seat_number` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `seats`
---
-
-INSERT INTO `seats` (`seat_id`, `booking_id`, `seat_number`) VALUES
-(1, 1, 1),
-(2, 2, 1),
-(3, 3, 3),
-(4, 4, 17),
-(5, 5, 31),
-(6, 6, 11),
-(7, 7, 2),
-(8, 8, 40),
-(9, 9, 21);
 
 -- --------------------------------------------------------
 
@@ -614,7 +552,7 @@ ALTER TABLE `announcement`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `buses`
@@ -632,7 +570,7 @@ ALTER TABLE `conductors`
 -- AUTO_INCREMENT for table `discounts`
 --
 ALTER TABLE `discounts`
-  MODIFY `discount_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `discount_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `inspectors`
@@ -650,7 +588,7 @@ ALTER TABLE `inspector_report`
 -- AUTO_INCREMENT for table `pickup_passenger`
 --
 ALTER TABLE `pickup_passenger`
-  MODIFY `psg_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `psg_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `routes`
@@ -662,13 +600,13 @@ ALTER TABLE `routes`
 -- AUTO_INCREMENT for table `schedules`
 --
 ALTER TABLE `schedules`
-  MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `seats`
 --
 ALTER TABLE `seats`
-  MODIFY `seat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `seat_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `sub_routes`
