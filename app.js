@@ -81,7 +81,7 @@ const updateScheduleStatus = () => {
 
 
 // Schedule the status update to run every minute
-cron.schedule("*/15 * * * *", () => {
+cron.schedule("*/1 * * * *", () => {
 	console.log("Running scheduled task to update schedule statuses");
 	updateScheduleStatus();
 });
