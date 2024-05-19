@@ -59,6 +59,9 @@ const postLogin = async (req, res) => {
 };
 
 const getRoutes = async (req, res) => {
+	
+	const discounts = await query("SELECT * FROM discounts");
+
 	const available_schedule = await query(
 		"SELECT COUNT(pp.psg_id) AS passenger_count, b.bus_number, sch.schedule_id, sch.route_id, sch.bus_id,  DATE_FORMAT(sch.departure_time, '%r') AS departure_time, DATE_FORMAT(sch.arrival_time, '%r') AS arrival_time, sch.departure_date, rt.fare, rt.start_point, rt.end_point, rt.route_id FROM schedules sch JOIN routes rt ON sch.route_id = rt.route_id JOIN buses b ON sch.bus_id = b.bus_id JOIN conductors c ON c.cnd_id = sch.conductor_id LEFT JOIN pickup_passenger pp ON pp.schedule_id = sch.schedule_id WHERE sch.departure_date = CURDATE() AND sch.status = 'Active' AND sch.conductor_id = ? GROUP BY sch.schedule_id, sch.route_id, sch.bus_id, sch.departure_time, sch.arrival_time, sch.departure_date, rt.fare, rt.start_point, rt.end_point, b.bus_number;",
 		[res.locals.user.id]
@@ -83,6 +86,7 @@ const getRoutes = async (req, res) => {
 		available_schedule,
 		sub_routes,
 		history,
+		discounts
 	});
 };
 
@@ -91,16 +95,21 @@ const postAddPassenger = async (req, res) => {
 		req.body;
 
 	let fullname = req.body.fullname;
+	let id_number = req.body.id_number
+
+	if (!id_number) {
+		id_number = null
+	}
 	if (!fullname) {
 		fullname = "PICK UP";
 	}
-
+	console.log(req.body)
 	// Calculate fare per passenger
 	const farePerPassenger = fare / passenger_count;
 
 	try {
 		const query =
-			"INSERT INTO pickup_passenger (fullname, origin, destination, fare_paid, schedule_id, conductor_id) VALUES (?, ?, ?, ?, ?, ?)";
+			"INSERT INTO pickup_passenger (fullname, origin, destination, fare_paid, schedule_id,id_number, conductor_id) VALUES (?, ?, ?, ?, ?, ?,?)";
 
 		// Loop to insert each passenger
 		for (let i = 0; i < passenger_count; i++) {
@@ -112,6 +121,7 @@ const postAddPassenger = async (req, res) => {
 					destination,
 					farePerPassenger,
 					schedule_id,
+					id_number,
 					res.locals.user.id,
 				],
 				(error, results) => {

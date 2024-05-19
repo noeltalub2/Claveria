@@ -112,8 +112,12 @@ const getBooking = async (req, res) => {
 };
 
 const getBookingRoute = async (req, res) => {
+	const options = { year: "numeric", month: "numeric", day: "numeric" };
+	const new_date = new Date()
+		.toLocaleDateString("en-CA", options)
+		.replace(/\//g, "-");
 	const id = req.params.id;
-	const date = req.query.date || new Date().toISOString().split("T")[0];
+	const date = req.query.date || new_date;
 
 	const routes_schedule = await query(
 		"SELECT routes.start_point, routes.end_point, schedules.departure_time, schedules.schedule_id, schedules.arrival_time, schedules.departure_date FROM schedules JOIN routes ON schedules.route_id = routes.route_id WHERE schedules.status = 'Active' AND (routes.route_id = ? AND schedules.departure_date = ?) ORDER BY schedules.departure_date ASC;",
@@ -259,10 +263,16 @@ const paidBooking = async (req, res) => {
 const downloadBooking = async (req, res) => {};
 
 const getRouteSchedule = async (req, res) => {
-	const date = req.query.date || new Date().toISOString().split("T")[0];
+	const options = { year: "numeric", month: "numeric", day: "numeric" };
+	const new_date = new Date()
+		.toLocaleDateString("en-CA", options)
+		.replace(/\//g, "-");
+
+	const date = req.query.date || new_date;
+	const route = req.query.route || 1;
 	const route_schedule = await query(
-		"SELECT r.start_point, r.end_point, s.*, b.bus_number, b.bus_status, b.bus_id, s.schedule_id FROM schedules s INNER JOIN buses b ON s.bus_id = b.bus_id JOIN routes r ON r.route_id = s.route_id WHERE s.departure_date = ? ORDER BY s.schedule_id DESC",
-		[date]
+		"SELECT r.start_point, r.end_point, s.*, b.bus_number, b.bus_status, b.bus_id, s.schedule_id FROM schedules s INNER JOIN buses b ON s.bus_id = b.bus_id JOIN routes r ON r.route_id = s.route_id WHERE s.departure_date = ? AND r.route_id = ? ORDER BY s.schedule_id DESC",
+		[date, route]
 	);
 
 	const buses = await query(
@@ -280,6 +290,7 @@ const getRouteSchedule = async (req, res) => {
 		routes,
 		conductors,
 		cur_date: date,
+		cur_route: route,
 	});
 };
 
@@ -422,7 +433,7 @@ const getTicket = async (req, res) => {
 	)[0];
 
 	const doc = new PDFDocument({
-		size: [144, 792],
+		size: [144, 160],
 		margins: { top: 0, bottom: 0, left: 0, right: 0 }, // 2 inches wide by 11 inches tall (144 points = 2 inches)
 	});
 
@@ -463,7 +474,7 @@ const getTicket = async (req, res) => {
 	// Footer
 	doc.fontSize(6)
 		.fillColor("grey")
-		.text("Thank you for choosing our service!", 10, 140, {
+		.text("Thank you for choosing our service!", 4, 145, {
 			align: "center",
 			width: 144,
 		});

@@ -366,7 +366,7 @@ const getTicket = async (req, res) => {
 	)[0];
 
 	const doc = new PDFDocument({
-		size: [144, 792],
+		size: [144, 160],
 		margins: { top: 0, bottom: 0, left: 0, right: 0 }, // 2 inches wide by 11 inches tall (144 points = 2 inches)
 	});
 
@@ -407,7 +407,7 @@ const getTicket = async (req, res) => {
 	// Footer
 	doc.fontSize(6)
 		.fillColor("grey")
-		.text("Thank you for choosing our service!", 10, 140, {
+		.text("Thank you for choosing our service!", 4, 140, {
 			align: "center",
 			width: 144,
 		});

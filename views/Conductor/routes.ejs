@@ -348,12 +348,14 @@
                                     <div class="mb-2">
                                         <label for="exampleFormControlInput1" class="form-label fw-bold">Passenger
                                             Name</label>
-                                        <input type="text" class="form-control" id="fullname" placeholder="(Optional)" name="fullname">
+                                        <input type="text" class="form-control" id="fullname" placeholder="(Optional)"
+                                            name="fullname">
                                     </div>
                                     <div class="mb-2">
                                         <label for="exampleFormControlInput13" class="form-label fw-bold">Passenger
                                             Count</label>
-                                        <input type="number" class="form-control" id="passenger_count"  name="passenger_count" required>
+                                        <input type="number" class="form-control" id="passenger_count"
+                                            name="passenger_count" required>
                                     </div>
                                     <div class="mb-2">
                                         <label for="exampleFormControlInput2" class="form-label fw-bold">Origin</label>
@@ -371,6 +373,33 @@
                                     <div class="mb-2">
                                         <label for="exampleFormControlInput4" class="form-label fw-bold">Fare</label>
                                         <input type="number" class="form-control" id="fare" name="fare">
+                                    </div>
+                                    <div class="mb-2">
+
+                                        <label for="discount" class="form-label fw-bold">Discount
+                                            (optional)</label>
+                                        <select class="form-control" id="discount" name="discount"
+                                            onchange="applyDiscount()">
+                                            <option value="">No Discount</option>
+                                            <%discounts.forEach((discount)=> {%>
+                                                <option value="<%=discount.discount_id%>"
+                                                    data-id="<%=discount.discount_percentage%>">
+                                                    <%=discount.discount_type%> - <%= (discount.discount_percentage) *
+                                                            100%>%
+                                                </option>
+                                                <%})%>
+
+
+
+                                        </select>
+                                    </div>
+
+
+                                    <div class="id_number mb-2" id="idNumberInput" style="display: none;">
+                                        <label for="idNumber" class="form-label fw-bold">ID
+                                            Number</label>
+                                        <input type="text" class="form-control" id="idNumber" name="id_number">
+
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -403,74 +432,118 @@
                     <script src="../vendor/datatables/datatables.js"></script>
                     <script src="../vendor/datatables/datatables.bootstrap.js"></script>
                     <script>
+                        function applyDiscount() {
+
+                            var discountDropdown = document.getElementById('discount');
+                            var selectedOption = discountDropdown.options[discountDropdown.selectedIndex].value;
+                            var idNumberInput = document.getElementById('idNumberInput');
+                            var idNumber = document.getElementById('idNumber');
+
+                            // Check if a discount is selected (value is not empty)
+                            if (selectedOption !== "") {
+                                idNumberInput.style.display = 'block';
+                                idNumber.required = true // Show the ID number input
+                            } else {
+                                idNumberInput.style.display = 'none';
+                                idNumber.required = false // Hide the ID number input
+                            }
+                            var originalFare = document.getElementById('fare').value; // Get the original fare from the server
+
+                            var discountElement = document.getElementById('discount');
+                            var discountPercentage = parseFloat(discountElement.options[discountElement.selectedIndex].getAttribute('data-id')); // Get the selected discount percentage
+
+                            // Check if discountPercentage is NaN (which means "No Discount" was selected)
+                            if (isNaN(discountPercentage)) {
+                                discountPercentage = 0; // Set discountPercentage to 0 if "No Discount" was selected
+                            }
+
+                            // Calculate the discounted fare
+                            var discountedFare = originalFare * (1 - discountPercentage);
+
+                            // Update the fare input field
+                            document.getElementById('fare').value = discountedFare.toFixed(2); // Format to 2 decimal places
+                        }
+                    </script>
+                    <script>
 
                         document.addEventListener("DOMContentLoaded", function () {
                             const form = document.getElementById("addForm")
 
                             form.addEventListener('submit', function (event) {
                                 event.preventDefault(); // Prevent the default form submission
-
+                                const selectElement = document.querySelector('select[name="discount"]').value;
                                 const schedule_id = document.getElementById("schedule_id").value
                                 const fullname = document.getElementById("fullname").value
                                 const origin = document.getElementById("origin").value
                                 const destination = document.getElementById("destination").value
                                 const fare = document.getElementById("fare").value
                                 const passenger_count = document.getElementById("passenger_count").value
+                                const id_number = document.getElementById("idNumber").value
                                 if (!fare) {
-                                    Swal.fire({
+                                    return Swal.fire({
                                         position: "top-end",
                                         icon: "error",
                                         title: `Please select valid Origin`,
                                         showConfirmButton: false,
                                         timer: 2000
                                     })
-                                } else {
-                                    // Define the API endpoint
-                                    const apiUrl = '/conductor/add';
-
-                                    // Create the data object containing the schedule ID
-                                    const data = {
-                                        schedule_id,
-                                        fullname,
-                                        origin,
-                                        destination,
-                                        fare,passenger_count
-                                    };
-
-                                    // Use fetch API to make a POST request
-                                    fetch(apiUrl, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                        },
-                                        body: JSON.stringify(data),
-                                    })
-                                        .then(res => res.json())
-                                        .then(response => {
-
-                                            if (response.success) {
-                                                Swal.fire(
-                                                    'Success!',
-                                                    `${response.message}`,
-                                                    'success',
-
-                                                ).then(function () {
-                                                    window.location.reload()
-                                                });
-
-
-                                            }
-                                            else {
-                                                Swal.fire(
-                                                    'Error',
-                                                    `${response.message}`,
-                                                    'error'
-                                                ).then(function () {
-                                                    window.location.reload()
-                                                });
-                                            }
-                                        })
                                 }
+
+                                if (selectElement && passenger_count > 1) {
+                                    return Swal.fire({
+                                        position: "top-end",
+                                        icon: "error",
+                                        title: `Discount is applicable for one passenger only`,
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    })
+                                }
+                                // Define the API endpoint
+                                const apiUrl = '/conductor/add';
+
+                                // Create the data object containing the schedule ID
+                                const data = {
+                                    schedule_id,
+                                    fullname,
+                                    origin,
+                                    destination,
+                                    fare, passenger_count, id_number
+                                };
+
+                                // Use fetch API to make a POST request
+                                fetch(apiUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify(data),
+                                })
+                                    .then(res => res.json())
+                                    .then(response => {
+
+                                        if (response.success) {
+                                            Swal.fire(
+                                                'Success!',
+                                                `${response.message}`,
+                                                'success',
+
+                                            ).then(function () {
+                                                window.location.reload()
+                                            });
+
+
+                                        }
+                                        else {
+                                            Swal.fire(
+                                                'Error',
+                                                `${response.message}`,
+                                                'error'
+                                            ).then(function () {
+                                                window.location.reload()
+                                            });
+                                        }
+                                    })
+
                             });
                         })
 

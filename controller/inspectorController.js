@@ -59,9 +59,10 @@ const postLogin = async (req, res) => {
 };
 
 const getRoutes = async (req, res) => {
-	const date = new Date(new Date().setDate(new Date().getDate()))
-		.toISOString()
-		.slice(0, 10);
+	const options = { year: "numeric", month: "numeric", day: "numeric" };
+	const date = new Date()
+		.toLocaleDateString("en-CA", options)
+		.replace(/\//g, "-");
 
 	const available_schedule = await query(
 		"SELECT COUNT(pp.psg_id) AS passenger_count, b.bus_number, sch.schedule_id, sch.route_id, sch.bus_id, DATE_FORMAT(sch.departure_time, '%r') AS departure_time, DATE_FORMAT(sch.arrival_time, '%r') AS arrival_time, sch.departure_date,SUM(pp.fare_paid) as total_fare, rt.fare, rt.start_point, rt.end_point, c.fullname FROM schedules sch JOIN routes rt ON sch.route_id = rt.route_id JOIN buses b ON sch.bus_id = b.bus_id JOIN conductors c ON c.cnd_id = sch.conductor_id LEFT JOIN pickup_passenger pp ON pp.schedule_id = sch.schedule_id WHERE sch.departure_date = ? AND sch.status = 'Active' GROUP BY sch.schedule_id, sch.route_id, sch.bus_id, sch.departure_time, sch.arrival_time, sch.departure_date, rt.fare, rt.start_point, rt.end_point, b.bus_number;",

@@ -268,7 +268,7 @@
                                     <div class="search-result">
                                         <div class="p-4 rounded-4 shadow-sm">
                                             <div class="boarding-details mb-3">
-                                            
+
                                                 <span class="badge rounded-pill mb-1  fs-6"
                                                     style="background-color: #388da8bf;">₱
                                                     <%=booking.fare%>
@@ -898,39 +898,39 @@
             <script>
                 function applyDiscount() {
                     let fareInput2 = document.getElementById('fare_inp');
-var discountDropdown = document.getElementById('discount');
-var selectedOption = discountDropdown.options[discountDropdown.selectedIndex].value;
-var idNumberInput = document.getElementById('idNumberInput');
-var idNumber = document.getElementById('idNumber');
-let sub_total = document.querySelector('#sub_total')
-                        let total = document.querySelector('.total .highlight');
-// Check if a discount is selected (value is not empty)
-if (selectedOption !== "") {
-    idNumberInput.style.display = 'block';
-    idNumber.required = true // Show the ID number input
-} else {
-    idNumberInput.style.display = 'none';
-    idNumber.required = false // Hide the ID number input
-}
-var originalFare = document.getElementById('fare_inp2').value; // Get the original fare from the server
+                    var discountDropdown = document.getElementById('discount');
+                    var selectedOption = discountDropdown.options[discountDropdown.selectedIndex].value;
+                    var idNumberInput = document.getElementById('idNumberInput');
+                    var idNumber = document.getElementById('idNumber');
+                    let sub_total = document.querySelector('#sub_total')
+                    let total = document.querySelector('.total .highlight');
+                    // Check if a discount is selected (value is not empty)
+                    if (selectedOption !== "") {
+                        idNumberInput.style.display = 'block';
+                        idNumber.required = true // Show the ID number input
+                    } else {
+                        idNumberInput.style.display = 'none';
+                        idNumber.required = false // Hide the ID number input
+                    }
+                    var originalFare = document.getElementById('fare_inp2').value; // Get the original fare from the server
 
-var discountElement = document.getElementById('discount');
-var discountPercentage = parseFloat(discountElement.options[discountElement.selectedIndex].getAttribute('data-id')); // Get the selected discount percentage
+                    var discountElement = document.getElementById('discount');
+                    var discountPercentage = parseFloat(discountElement.options[discountElement.selectedIndex].getAttribute('data-id')); // Get the selected discount percentage
 
-// Check if discountPercentage is NaN (which means "No Discount" was selected)
-if (isNaN(discountPercentage)) {
-    discountPercentage = 0; // Set discountPercentage to 0 if "No Discount" was selected
-}
+                    // Check if discountPercentage is NaN (which means "No Discount" was selected)
+                    if (isNaN(discountPercentage)) {
+                        discountPercentage = 0; // Set discountPercentage to 0 if "No Discount" was selected
+                    }
 
-// Calculate the discounted fare
-var discountedFare = originalFare * (1 - discountPercentage);
+                    // Calculate the discounted fare
+                    var discountedFare = originalFare * (1 - discountPercentage);
 
-// Update the fare input field
-document.getElementById('fare_inp').value = discountedFare.toFixed(2); // Format to 2 decimal places
+                    // Update the fare input field
+                    document.getElementById('fare_inp').value = discountedFare.toFixed(2); // Format to 2 decimal places
 
-sub_total.textContent = `₱ ${fareInput2.value}`
-total.textContent =  `₱ ${fareInput2.value}`
-}
+                    sub_total.textContent = `₱ ${fareInput2.value}`
+                    total.textContent = `₱ ${fareInput2.value}`
+                }
 
             </script>
             <script>
@@ -1018,6 +1018,17 @@ total.textContent =  `₱ ${fareInput2.value}`
                         const sch_inp = document.querySelector("#sch_inp").value;
                         const fare_inp_discount = document.querySelector("#fare_inp").value;
                         const fare_inp_orig = document.querySelector("#fare_inp2").value;
+                        const selectElement = document.querySelector('select[name="discount"]').value;
+
+                        if (selectElement && maxSeats > 1) {
+                            return Swal.fire({
+                                position: "top-end",
+                                icon: "error",
+                                title: `Discount is applicable for one passenger only`,
+                                showConfirmButton: false,
+                                timer: 2000
+                            })
+                        }
 
                         if (fare_inp_discount < fare_inp_orig) {
                             console.log("HAVE DISCOUNT")
@@ -1027,7 +1038,7 @@ total.textContent =  `₱ ${fareInput2.value}`
                             fare_inp = fare_inp_orig
                         }
 
-                        
+
                         const drop_off = document.querySelector("#autocompleteInput").value;
                         const dis_inp = document.querySelector("#discount").value;
                         const id_number = document.querySelector("#idNumber").value;
@@ -1057,7 +1068,7 @@ total.textContent =  `₱ ${fareInput2.value}`
                                 sch_inp,
                                 fare_inp,
                                 selectedSeatIds,
-                                drop_off, id_number,dis_inp
+                                drop_off, id_number, dis_inp
                             };
 
                             // Use fetch API to make a POST request
@@ -1107,7 +1118,7 @@ total.textContent =  `₱ ${fareInput2.value}`
                     })
                         .then(response => response.json())
                         .then(data => {
-                     
+
                             const seat_containers = document.querySelectorAll('#seat_container');
 
                             seat_container.classList.remove('d-none');

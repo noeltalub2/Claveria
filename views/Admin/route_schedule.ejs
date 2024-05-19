@@ -34,8 +34,17 @@
                                     <div class="mb-3">
                                         <form action="/admin/route-schedule" method="get" class="row">
                                       
-
-                                            <div class="col-lg-5 col-10">
+                                            <div class="col-lg-4 col-5">
+                                                <select class="form-select" id="routeSelect" name="route" required>
+                                                    <option value="" hidden selected></option>
+                                                    <% routes.forEach(function(route) { %>
+                                                        <option value="<%= route.route_id %>" <%=cur_route == route.route_id ? 'selected' : ''%>>
+                                                            <%= route.start_point %> - <%= route.end_point %>
+                                                        </option>
+                                                        <% }) %>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-4 col-5">
                                                 <input type="date" class="form-control" id="fromDate" name="date" value="<%=cur_date%>"
                                                 required>
                                             </div>
