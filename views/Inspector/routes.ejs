@@ -189,7 +189,7 @@
                                             <div class="search-result">
                                                 <div class="p-4 rounded-4 shadow-sm">
                                                     <div class="boarding-details mb-3">
-                                                      
+
                                                         <span class="badge rounded-pill  fs-6 mb-1"
                                                             style="background-color: #388da8bf;">Conductor:
                                                             <%= booking.fullname%>
@@ -250,7 +250,11 @@
                                                                             <%=booking.arrival_time%>
                                                                 </span></p>
 
-
+                                                            <button type="button" class="book-btn mb-1"
+                                                                onclick="fetchData('<%=booking.schedule_id%>')"
+                                                                data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                                                                View Report
+                                                            </button>
                                                             <!-- Button trigger modal -->
                                                             <button type="button" class="book-btn"
                                                                 data-bs-toggle="modal" data-bs-target="#exampleModal"
@@ -266,6 +270,7 @@
                                     </div>
                                     <%})%>
                             </div>
+
                             <%} else {%>
                                 <div class="location-header">
                                     <h3 class="fw-bold">
@@ -322,6 +327,34 @@
                                     <button type="submit" class="btn btn-primary book-btn-1">Add Report</button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal modal-lg fade" id="scheduleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">View Report</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <table id="myTable" class="table table-hover " style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Fullname</th>
+                                            <th>Origin</th>
+                                            <th>Destination</th>
+                                            <th>Fare Paid</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -419,10 +452,42 @@
 
                     </script>
                     <script>
-                        new DataTable('#historyTable', {
-                            pageLength: 5,
-                            lengthMenu: [[5, 10, 15, -1], [5, 10, 15, "All"]] // Sets the options for "Show X entries" dropdown
+                        let dataTable;
+
+                        document.addEventListener('DOMContentLoaded', function () {
+                            // Initialize the DataTable once when the page loads
+                            dataTable = new DataTable(document.querySelector('#myTable'), {
+                                columns: [
+                                    { data: 'fullname' },
+                                    { data: 'origin' },
+                                    { data: 'destination' },
+                                    { data: 'fare_paid' }
+                                ]
+                            });
                         });
+
+                        async function fetchData(sch_id) {
+                            try {
+                                const response = await fetch(`/inspector/schedule/${sch_id}`);
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! status: ${response.status}`);
+                                }
+                                const data = await response.json();
+                                updateTable(data);
+                            } catch (e) {
+                                console.error('There was a problem with fetching the data: ' + e.message);
+                            }
+                        }
+
+                        function updateTable(data) {
+                            dataTable.clear();
+                            dataTable.rows.add(data);
+                            dataTable.draw();
+                        }
+
+
+
+
                     </script>
                     <!-- Main JS File -->
                     <script src="../assets/js/main.js"></script>

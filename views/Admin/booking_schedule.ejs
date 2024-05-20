@@ -42,7 +42,7 @@
                                             <p class="mb-1 mt-0">
                                                 <%= new Intl.DateTimeFormat('en-US', {month: 'short' , day: '2-digit' ,
                                                     year: 'numeric' }).format(new Date(schedule_details.departure_date))
-                                                    %> - <%=schedule_details.departure_time%>
+                                                    %> - <span id="departureTime"><%=schedule_details.departure_time%></span> 
                                             </p>
                                         </div>
                                         <div class="card-body">

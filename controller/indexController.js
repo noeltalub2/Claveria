@@ -382,11 +382,11 @@ const getTicket = async (req, res) => {
 	doc.fontSize(8) // Smaller font size for the narrow format
 		.text("Claveria Tour Inc.", 20, 20, { align: "center" })
 		.fontSize(6) // Even smaller for subtext
-		.text("Official Ticket", 20, 30, { align: "center" });
+		.text("Reservation Slip", 20, 30, { align: "center" });
 
 	// Ticket Details moved closer to the logo
 	doc.fontSize(6)
-		.text(`OR Number: ${details.booking_id}`, 10, 50) // Start immediately after subtitle
+		.text(`Reference Number: ${details.booking_id.toString().padStart(6,'0')}`, 10, 50) // Start immediately after subtitle
 		.text(
 			`Departure Date: ${new Intl.DateTimeFormat("en-US", {
 				month: "short",

@@ -479,8 +479,8 @@
                                                                     id="departure_time">
                                                                     <%= new Intl.DateTimeFormat('en-US', {month: 'short'
                                                                         , day: '2-digit' , year: 'numeric' }).format(new
-                                                                        Date(route_details.departure_date)) %> - <%=
-                                                                            route_details.departure_time %>
+                                                                        Date(route_details.departure_date)) %> - <span id="departureTime"><%=
+                                                                            route_details.departure_time %></span> 
                                                                 </span>
 
 

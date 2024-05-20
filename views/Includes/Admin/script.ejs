@@ -44,3 +44,22 @@
 
 
 </script>
+
+<script>
+    // Function to convert time from 24-hour to 12-hour format
+    function convertTime24to12(timeElement) {
+        const timeString = timeElement.textContent;
+        const timeParts = timeString.split(':'); // splits "HH:MM:SS"
+        const date = new Date();
+        date.setHours(timeParts[0], timeParts[1], timeParts[2]);
+        timeElement.textContent = date.toLocaleTimeString('en-US', {
+            hour: 'numeric', minute: '2-digit', hour12: true
+        });
+    }
+
+    // Convert departure time
+    convertTime24to12(document.getElementById('departureTime'));
+
+    // Convert arrival time
+    convertTime24to12(document.getElementById('arrivalTime'));
+</script>

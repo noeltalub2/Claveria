@@ -74,6 +74,19 @@ const getRoutes = async (req, res) => {
 	});
 };
 
+const getSchedule = async (req, res) => {
+	const schedule_id = req.params.id;
+
+
+	const sch_data = await query(
+		"SELECT * FROM pickup_passenger WHERE schedule_id = ?",
+		[schedule_id]
+	);
+
+	console.log(sch_data)
+	res.status(200).json(sch_data);
+};
+
 const postAddReport = async (req, res) => {
 	const { schedule_id, added_passenger, arrival_time } = req.body;
 
@@ -116,6 +129,7 @@ export default {
 	getLogin,
 	postLogin,
 	getRoutes,
+	getSchedule,
 	postAddReport,
 	getLogout,
 };

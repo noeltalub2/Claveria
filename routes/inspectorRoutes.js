@@ -12,6 +12,14 @@ router.get(
 	auth.checkRole(["inspector"]),
 	inspectorController.getRoutes
 );
+
+router.get(
+	"/schedule/:id",
+	auth.requireAuth,
+	auth.checkRole(["inspector"]),
+	inspectorController.getSchedule
+);
+
 router.post(
 	"/add",
 	auth.requireAuth,

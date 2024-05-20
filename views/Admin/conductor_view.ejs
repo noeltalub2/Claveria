@@ -60,12 +60,12 @@
                                                                 </td>
                                                                 <td>
                                                                     <%= new Intl.DateTimeFormat('en-US', {month: 'short' , day: '2-digit' ,
-                                                                    year: 'numeric' }).format(conductor.departure_date) %> - <%=conductor.departure_time%>
+                                                                    year: 'numeric' }).format(conductor.departure_date) %> - <span id="departureTime"><%=conductor.departure_time%></span>
 
                                                                 </td>
                                                                 <td>
                                                                     <%= new Intl.DateTimeFormat('en-US', {month: 'short' , day: '2-digit' ,
-                                                                    year: 'numeric' }).format(conductor.departure_date) %> - <%=conductor.arrival_time%>
+                                                                    year: 'numeric' }).format(conductor.departure_date) %> - <span id="arrivalTime"><%=conductor.arrival_time%></span>
 
                                                                 </td>
                                                                 <td>

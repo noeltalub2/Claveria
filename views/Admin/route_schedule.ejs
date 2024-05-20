@@ -101,14 +101,16 @@
                                                                     <%= new Intl.DateTimeFormat('en-US', {month: 'short'
                                                                         , day: '2-digit' , year: 'numeric' }).format(new
                                                                         Date(route.departure_date)) %> <br>
-                                                                        <%=route.departure_time%>
+                                                                        <span id="departureTime"><%=route.departure_time%></span>
+                                                                     
                                                                 </td>
 
                                                                 <td>
                                                                     <%= new Intl.DateTimeFormat('en-US', {month: 'short'
                                                                         , day: '2-digit' , year: 'numeric' }).format(new
                                                                         Date(route.departure_date)) %> <br>
-                                                                        <%=route.arrival_time%>
+                                                                        <span id="arrivalTime"><%=route.arrival_time%></span>
+                                                                        
                                                                 </td>
 
                                                                 <td>
