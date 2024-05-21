@@ -422,6 +422,18 @@ const getRouteScheduleWalkIn = async (req, res) => {
 };
 
 const getTicket = async (req, res) => {
+	function convertTime24to12(time24) {
+		const [hour, minute, second] = time24.split(':');
+		const date = new Date();
+		date.setHours(parseInt(hour), parseInt(minute), parseInt(second));
+		return date.toLocaleTimeString('en-US', {
+			hour: 'numeric',
+			minute: '2-digit',
+			second: '2-digit',
+			hour12: true
+		});
+	}
+	
 	const booking_id = req.params.id;
 	const user_id = req.params.user;
 
@@ -463,7 +475,7 @@ const getTicket = async (req, res) => {
 			10,
 			60
 		)
-		.text(`Departure Time: ${details.departure_time}`, 10, 70)
+		.text(`Departure Time: ${convertTime24to12(details.departure_time)}`, 10, 70)
 		.text(`Origin: ${details.start_point}`, 10, 80)
 		.text(`Destination: ${details.end_point}`, 10, 90)
 		.text(`Bus Number: ${details.bus_number}`, 10, 100)
