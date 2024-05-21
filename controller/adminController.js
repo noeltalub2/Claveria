@@ -439,13 +439,13 @@ const getTicket = async (req, res) => {
 
 	const details = (
 		await query(
-			"SELECT COUNT(*) AS 'count', b.status,bs.bus_number, b.booking_id, b.user_id, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers, b.fare_paid, r.end_point, r.start_point, s.departure_time, r.fare, s.departure_date FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id INNER JOIN buses bs ON bs.bus_id = s.bus_id WHERE b.booking_id = ? AND b.user_id = ? AND b.status IN ('Pending', 'Paid') GROUP BY b.booking_id;",
+			"SELECT COUNT(*) AS 'count', b.status,bs.bus_number,b.dateModified, b.booking_id, b.user_id, GROUP_CONCAT(st.seat_number ORDER BY st.seat_number SEPARATOR ', ') AS seat_numbers, b.fare_paid, r.end_point, r.start_point, s.departure_time, r.fare, s.departure_date FROM routes r JOIN schedules s ON r.route_id = s.route_id JOIN bookings b ON b.schedule_id = s.schedule_id JOIN seats st ON st.booking_id = b.booking_id INNER JOIN buses bs ON bs.bus_id = s.bus_id WHERE b.booking_id = ? AND b.user_id = ? AND b.status IN ('Pending', 'Paid') GROUP BY b.booking_id;",
 			[booking_id, user_id]
 		)
 	)[0];
 
 	const doc = new PDFDocument({
-		size: [144, 160],
+		size: [144, 190],
 		margins: { top: 0, bottom: 0, left: 0, right: 0 }, // 2 inches wide by 11 inches tall (144 points = 2 inches)
 	});
 
@@ -481,12 +481,17 @@ const getTicket = async (req, res) => {
 		.text(`Bus Number: ${details.bus_number}`, 10, 100)
 		.text(`Seat Number(s): ${details.seat_numbers}`, 10, 110)
 		.text(`Total Amount: ${details.fare_paid}`, 10, 120)
-		.text(`Status: ${details.status}`, 10, 130);
+		.text(`Status: ${details.status}`, 10, 130)
+		.text(`Date Paid: ${new Intl.DateTimeFormat("en-US", {
+			month: "short",
+			day: "2-digit",
+			year: "numeric",
+		}).format(new Date(details.dateModified))}`, 10, 140);
 
 	// Footer
 	doc.fontSize(6)
 		.fillColor("grey")
-		.text("Thank you for choosing our service!", 4, 145, {
+		.text("Thank you for choosing our service!", 4, 160, {
 			align: "center",
 			width: 144,
 		});
@@ -520,7 +525,7 @@ const postRouteScheduleWalkIn = async (req, res) => {
 				.slice(0, 10),
 		};
 
-		let sql = "INSERT INTO bookings SET ?";
+		let sql = "INSERT INTO bookings SET ?, dateModified = CURRENT_TIMESTAMP()";
 		let query = db.query(sql, booking, (err, result) => {
 			if (err) {
 				throw err;
